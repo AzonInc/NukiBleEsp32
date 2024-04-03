@@ -31,7 +31,7 @@ class NukiLock : public Nuki::NukiBle {
      * @param keypadAction The action to be executed
      */
     Nuki::CmdResult keypadAction(KeypadActionSource source, uint32_t code, KeypadAction keypadAction);
-
+    
     /**
      * @brief Requests keyturner state from Lock via BLE
      *
@@ -46,7 +46,7 @@ class NukiLock : public Nuki::NukiBle {
      */
     void retrieveKeyTunerState(KeyTurnerState* retrievedKeyTurnerState);
 
-    
+
     /**
      * @brief Requests battery status from Lock via BLE
      *
