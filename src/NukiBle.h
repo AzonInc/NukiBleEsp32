@@ -175,7 +175,7 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
      * @param id id to be deleted
      */
     Nuki::CmdResult deleteAuthorizationEntry(const uint32_t id);
-    
+
     /**
      * @brief Sends an updated authorization entry to the lock via BLE
      *
@@ -314,7 +314,11 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
     Command lastMsgCodeReceived = Command::Empty;
 
   private:
+    #ifndef NUKI_MUTEX_RECURSIVE
     SemaphoreHandle_t nukiBleSemaphore = xSemaphoreCreateMutex();
+    #else
+    SemaphoreHandle_t nukiBleSemaphore = xSemaphoreCreateRecursiveMutex();
+    #endif
     bool takeNukiBleSemaphore(std::string taker);
     std::string owner = "free";
     void giveNukiBleSemaphore();

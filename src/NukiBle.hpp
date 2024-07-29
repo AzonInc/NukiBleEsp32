@@ -112,6 +112,7 @@ Nuki::CmdResult NukiBle::cmdStateMachine(const TDeviceAction action) {
         #endif
         nukiCommandState = CommandState::Idle;
         lastMsgCodeReceived = Command::Empty;
+        extendDisconnectTimeout();
         return Nuki::CmdResult::Success;
       } else if (lastMsgCodeReceived == Command::ErrorReport && errorCode != 69) {
         #ifdef DEBUG_NUKI_COMMUNICATION
@@ -234,6 +235,7 @@ Nuki::CmdResult NukiBle::cmdChallStateMachine(const TDeviceAction action, const 
         log_d("************************ DATA RECEIVED ************************");
         #endif
         nukiCommandState = CommandState::Idle;
+        extendDisconnectTimeout();
         return Nuki::CmdResult::Success;
       }
       break;
