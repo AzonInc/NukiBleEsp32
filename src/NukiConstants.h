@@ -360,7 +360,7 @@ struct __attribute__((packed)) TimeValue {
   uint8_t day;
   uint8_t hour;
   uint8_t minute;
-  uint16_t second;
+  uint8_t second;
 };
 
 inline void doorSensorStateToString(const DoorSensorState state, char* str) {
