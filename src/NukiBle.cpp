@@ -40,8 +40,7 @@ NukiBle::NukiBle(const std::string& deviceName,
     deviceServiceUUID(deviceServiceUUID),
     gdioUUID(gdioUUID),
     userDataUUID(userDataUUID),
-    preferencesId(preferencedId),
-    errorCode(ErrorCode::ERROR_UNKNOWN) {
+    preferencesId(preferencedId) {
 }
 
 NukiBle::~NukiBle() {
