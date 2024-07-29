@@ -18,6 +18,7 @@
 #include <Preferences.h>
 #include <esp_task_wdt.h>
 #include <BleInterfaces.h>
+#include <atomic>
 #include "sodium/crypto_secretbox.h"
 
 #define GENERAL_TIMEOUT 3000
@@ -280,7 +281,7 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
 
   protected:
     bool connectBle(const BLEAddress bleAddress);
-    void extendDisonnectTimeout();
+    void extendDisconnectTimeout();
 
     template <typename TDeviceAction>
     Nuki::CmdResult executeAction(const TDeviceAction action);
@@ -316,6 +317,7 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
     uint16_t timeoutDuration = 1000;
     uint8_t connectTimeoutSec = 1;
     uint8_t connectRetries = 5;
+    unsigned long pairingLastSeen = 0;
 
     void onConnect(BLEClient*) override;
     void onDisconnect(BLEClient*) override;

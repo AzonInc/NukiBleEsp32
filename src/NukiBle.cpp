@@ -74,14 +74,17 @@ PairingResult NukiBle::pairNuki(AuthorizationIdType idType) {
 
   if (isPaired) {
     #ifdef DEBUG_NUKI_CONNECT
-    log_d("Allready paired");
+    log_d("Already paired");
     #endif
     isPaired = true;
     return PairingResult::Success;
   }
   PairingResult result = PairingResult::Pairing;
 
+  if (pairingLastSeen < millis() - 2000) pairingServiceAvailable = false;
+
   if (pairingServiceAvailable && bleAddress != BLEAddress("")) {
+    pairingServiceAvailable = false;
     #ifdef DEBUG_NUKI_CONNECT
     log_d("Nuki in pairing mode found");
     #endif
@@ -91,6 +94,7 @@ PairingResult NukiBle::pairNuki(AuthorizationIdType idType) {
       PairingState nukiPairingState = PairingState::InitPairing;
       do {
         nukiPairingState = pairStateMachine(nukiPairingState);
+        extendDisconnectTimeout();
         delay(50);
       } while ((nukiPairingState != PairingState::Success) && (nukiPairingState != PairingState::Timeout));
 
@@ -101,7 +105,7 @@ PairingResult NukiBle::pairNuki(AuthorizationIdType idType) {
       } else {
         result = PairingResult::Timeout;
       }
-      extendDisonnectTimeout();
+      extendDisconnectTimeout();
     }
   } else {
     #ifdef DEBUG_NUKI_CONNECT
@@ -195,7 +199,7 @@ void NukiBle::setConnectRetries(uint8_t retries) {
   connectRetries = retries;
 }
 
-void NukiBle::extendDisonnectTimeout() {
+void NukiBle::extendDisconnectTimeout() {
   lastStartTimeout = millis();
 }
 
@@ -258,8 +262,7 @@ void NukiBle::onResult(BLEAdvertisedDevice* advertisedDevice) {
       #endif
       bleAddress = advertisedDevice->getAddress();
       pairingServiceAvailable = true;
-    } else {
-      pairingServiceAvailable = false;
+      pairingLastSeen = millis();
     }
   }
 }
