@@ -11,6 +11,7 @@ NukiLock::NukiLock(const std::string& deviceName, const uint32_t deviceId)
             NimBLEUUID("a92ee101-5501-11e4-916c-0800200c9a66"),
             NimBLEUUID("a92ee202-5501-11e4-916c-0800200c9a66"),
             deviceName) {
+    errorCode = (uint8_t)ErrorCode::ERROR_UNKNOWN;
 }
 
 Nuki::CmdResult NukiLock::lockAction(const LockAction lockAction, const uint32_t nukiAppId, const uint8_t flags, const char* nameSuffix, const uint8_t nameSuffixLen) {
