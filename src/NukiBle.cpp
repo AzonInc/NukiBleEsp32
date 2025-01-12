@@ -39,19 +39,21 @@ namespace Nuki {
 const char* NUKI_SEMAPHORE_OWNER = "Nuki";
 
 NukiBle::NukiBle(const std::string& deviceName,
-                const uint32_t deviceId,
-                const NimBLEUUID pairingServiceUUID,
-                const NimBLEUUID pairingServiceUltraUUID,
-                const NimBLEUUID deviceServiceUUID,
-                const NimBLEUUID gdioUUID,
-                const NimBLEUUID userDataUUID,
-                const std::string preferencedId)
+                 const uint32_t deviceId,
+                 const NimBLEUUID pairingServiceUUID,
+                 const NimBLEUUID pairingServiceUltraUUID,
+                 const NimBLEUUID deviceServiceUUID,
+                 const NimBLEUUID gdioUUID,
+                 const NimBLEUUID gdioUltraUUID,
+                 const NimBLEUUID userDataUUID,
+                 const std::string preferencedId)
   : deviceName(deviceName),
     deviceId(deviceId),
     pairingServiceUUID(pairingServiceUUID),
     pairingServiceUltraUUID(pairingServiceUltraUUID),
     deviceServiceUUID(deviceServiceUUID),
     gdioUUID(gdioUUID),
+    gdioUltraUUID(gdioUltraUUID),
     userDataUUID(userDataUUID),
     preferencesId(preferencedId)
 {
@@ -906,12 +908,18 @@ void NukiBle::saveCredentials() {
   currentBleAddress[5] = bleAddress.getVal()[0];
   preferences.getBytes(BLE_ADDRESS_STORE_NAME, storedBleAddress, 6);
 
-  if (compareCharArray(currentBleAddress, storedBleAddress, 6)) {
-    //only store earlier retreived pin code if address is the same
-    //otherwise it is a different/new lock
-    preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2);
+  preferences.putBool(ULTRA_STORE_NAME, isLockUltra());
+
+  if (isLockUltra()) {
+    preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &ultraPinCode, 4);
   } else {
-    preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &defaultPincode, 2);
+    if (compareCharArray(currentBleAddress, storedBleAddress, 6)) {
+      //only store earlier retreived pin code if address is the same
+      //otherwise it is a different/new lock
+      preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2);
+    } else {
+      preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &defaultPincode, 2);
+    }
   }
 
   if ((preferences.putBytes(BLE_ADDRESS_STORE_NAME, currentBleAddress, 6) == 6)
@@ -1110,30 +1118,36 @@ PairingState NukiBle::pairStateMachine(const PairingState nukiPairingState) {
         ESP_LOGD("NukiBle", "##################### SEND AUTHENTICATOR #########################");
       }
       sendPlainMessage(Command::AuthorizationAuthenticator, authenticator, sizeof(authenticator));
+      ultraAuthInfoCommandReceived = false;
       nukiPairingResultState = PairingState::SendAuthData;
     }
     case PairingState::SendAuthData: {
       if (isLockUltra()) {
-        if (debugNukiConnect) {
-          ESP_LOGD("NukiBle", "##################### SEND AUTHORIZATION DATA (ULTRA) #########################");
+        if (ultraAuthInfoCommandReceived) {
+          ultraAuthInfoCommandReceived = false;
+
+          if (debugNukiConnect) {
+            ESP_LOGD("NukiBle", "##################### SEND AUTHORIZATION DATA (ULTRA) #########################");
+          }
+
+          unsigned char authorizationDataId[4] = {};
+          unsigned char authorizationDataName[32] = {};
+          authorizationDataId[0] = (deviceId >> (8 * 0)) & 0xff;
+          authorizationDataId[1] = (deviceId >> (8 * 1)) & 0xff;
+          authorizationDataId[2] = (deviceId >> (8 * 2)) & 0xff;
+          authorizationDataId[3] = (deviceId >> (8 * 3)) & 0xff;
+          memcpy(authorizationDataName, deviceName.c_str(), deviceName.size());
+
+          //compose and send message
+          unsigned char authorizationDataMessage[40];
+          memcpy(&authorizationDataMessage[0], authorizationDataId, sizeof(authorizationDataId));
+          memcpy(&authorizationDataMessage[4], authorizationDataName, sizeof(authorizationDataName));
+          memcpy(&authorizationDataMessage[36], &ultraPinCode, 4);
+
+          encryptPairing = true;
+          sendEncryptedMessage(Command::AuthorizationData, authorizationDataMessage, sizeof(authorizationDataMessage));
+          nukiPairingResultState = PairingState::RecStatus;
         }
-          
-        unsigned char authorizationDataId[4] = {};
-        unsigned char authorizationDataName[32] = {};
-        authorizationDataId[0] = (deviceId >> (8 * 0)) & 0xff;
-        authorizationDataId[1] = (deviceId >> (8 * 1)) & 0xff;
-        authorizationDataId[2] = (deviceId >> (8 * 2)) & 0xff;
-        authorizationDataId[3] = (deviceId >> (8 * 3)) & 0xff;
-        memcpy(authorizationDataName, deviceName.c_str(), deviceName.size());
-
-        //compose and send message
-        unsigned char authorizationDataMessage[40];
-        memcpy(&authorizationDataMessage[0], authorizationDataId, sizeof(authorizationDataId));
-        memcpy(&authorizationDataMessage[4], authorizationDataName, sizeof(authorizationDataName));
-        memcpy(&authorizationDataMessage[36], &ultraPinCode, 4);
-
-        sendEncryptedMessage(Command::AuthorizationData, authorizationDataMessage, sizeof(authorizationDataMessage));
-        nukiPairingResultState = PairingState::RecStatus;
       } else {
         if (isCharArrayNotEmpty(challengeNonceK, sizeof(challengeNonceK))) {
           if (debugNukiConnect) {
@@ -1229,7 +1243,14 @@ bool NukiBle::sendEncryptedMessage(Command commandIdentifier, const unsigned cha
   unsigned char plainData[6 + payloadLen] = {};
   unsigned char plainDataWithCrc[8 + payloadLen] = {};
 
-  memcpy(&plainData[0], &authorizationId, sizeof(authorizationId));
+  if(encryptPairing) {
+    plainData[0] = (deviceId >> (8 * 0)) & 0xff;
+    plainData[1] = (deviceId >> (8 * 1)) & 0xff;
+    plainData[2] = (deviceId >> (8 * 2)) & 0xff;
+    plainData[3] = (deviceId >> (8 * 3)) & 0xff;
+  } else {
+    memcpy(&plainData[0], &authorizationId, sizeof(authorizationId));
+  }
   memcpy(&plainData[4], &commandIdentifier, sizeof(commandIdentifier));
   memcpy(&plainData[6], payload, payloadLen);
 
@@ -1251,7 +1272,15 @@ bool NukiBle::sendEncryptedMessage(Command commandIdentifier, const unsigned cha
   generateNonce(sentNonce, sizeof(sentNonce), debugNukiHexData);
 
   memcpy(&additionalData[0], sentNonce, sizeof(sentNonce));
-  memcpy(&additionalData[24], authorizationId, sizeof(authorizationId));
+
+  if(encryptPairing) {
+    additionalData[24] = (deviceId >> (8 * 0)) & 0xff;
+    additionalData[25] = (deviceId >> (8 * 1)) & 0xff;
+    additionalData[26] = (deviceId >> (8 * 2)) & 0xff;
+    additionalData[27] = (deviceId >> (8 * 3)) & 0xff;
+  } else {
+    memcpy(&additionalData[24], authorizationId, sizeof(authorizationId));
+  }
 
   //Encrypt plain data
   unsigned char plainDataEncr[ sizeof(plainDataWithCrc) + crypto_secretbox_MACBYTES] = {0};
@@ -1270,11 +1299,22 @@ bool NukiBle::sendEncryptedMessage(Command commandIdentifier, const unsigned cha
     memcpy(&dataToSend[0], additionalData, sizeof(additionalData));
     memcpy(&dataToSend[30], plainDataEncr, sizeof(plainDataEncr));
 
-    if (connectBle(bleAddress, false)) {
-      printBuffer((uint8_t*)dataToSend, sizeof(dataToSend), false, "Sending encrypted message", debugNukiHexData);
-      return pUsdioCharacteristic->writeValue((uint8_t*)dataToSend, sizeof(dataToSend), true);
+    if(encryptPairing) {
+      if (connectBle(bleAddress, true)) {
+        printBuffer((uint8_t*)dataToSend, sizeof(dataToSend), false, "Sending encrypted pairing message", debugNukiHexData);
+        encryptPairing = false;
+        recieveEncrypted = true;
+        return pGdioCharacteristic->writeValue((uint8_t*)dataToSend, sizeof(dataToSend), true);
+      } else {
+        ESP_LOGW("NukiBle", "Send encr msg failed due to unable to connect");
+      }
     } else {
-      ESP_LOGW("NukiBle", "Send encr msg failed due to unable to connect");
+      if (connectBle(bleAddress, false)) {
+        printBuffer((uint8_t*)dataToSend, sizeof(dataToSend), false, "Sending encrypted message", debugNukiHexData);
+        return pUsdioCharacteristic->writeValue((uint8_t*)dataToSend, sizeof(dataToSend), true);
+      } else {
+        ESP_LOGW("NukiBle", "Send encr msg failed due to unable to connect");
+      }
     }
   } else {
     ESP_LOGW("NukiBle", "Send msg failed due to encryption fail");
@@ -1311,10 +1351,18 @@ bool NukiBle::sendPlainMessage(Command commandIdentifier, const unsigned char* p
 
 bool NukiBle::registerOnGdioChar() {
   // Obtain a reference to the KeyTurner Pairing service
-  pKeyturnerPairingService = pClient->getService(pairingServiceUUID);
+  if (isLockUltra()) {
+    pKeyturnerPairingService = pClient->getService(pairingServiceUltraUUID);
+  } else {
+    pKeyturnerPairingService = pClient->getService(pairingServiceUUID);
+  }
   if (pKeyturnerPairingService != nullptr) {
     //Obtain reference to GDIO char
-    pGdioCharacteristic = pKeyturnerPairingService->getCharacteristic(gdioUUID);
+    if (isLockUltra()) {
+      pGdioCharacteristic = pKeyturnerPairingService->getCharacteristic(gdioUltraUUID);
+    } else {
+      pGdioCharacteristic = pKeyturnerPairingService->getCharacteristic(gdioUUID);
+    }
     if (pGdioCharacteristic != nullptr) {
       if (pGdioCharacteristic->canIndicate()) {
         using namespace std::placeholders;
@@ -1405,7 +1453,7 @@ void NukiBle::notifyCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic, 
   }
   printBuffer((uint8_t*)recData, length, false, "Received data", debugNukiHexData);
 
-  if (pBLERemoteCharacteristic->getUUID() == gdioUUID) {
+  if (pBLERemoteCharacteristic->getUUID() == gdioUUID || (pBLERemoteCharacteristic->getUUID() == gdioUltraUUID && (!recieveEncrypted || length < 24))) {
     //handle not encrypted msg
     uint16_t returnCode = ((uint16_t)recData[1] << 8) | recData[0];
     crcCheckOke = crcValid(recData, length, debugNukiCommunication);
@@ -1414,7 +1462,10 @@ void NukiBle::notifyCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic, 
       memcpy(plainData, &recData[2], length - 4);
       handleReturnMessage((Command)returnCode, plainData, length - 4);
     }
-  } else if (pBLERemoteCharacteristic->getUUID() == userDataUUID) {
+  } else if (pBLERemoteCharacteristic->getUUID() == userDataUUID || (pBLERemoteCharacteristic->getUUID() == gdioUltraUUID && recieveEncrypted)) {
+    if (pBLERemoteCharacteristic->getUUID() == gdioUltraUUID) {
+      recieveEncrypted = false;
+    }
     //handle encrypted msg
     unsigned char recNonce[crypto_secretbox_NONCEBYTES];
     unsigned char recAuthorizationId[4];
@@ -1479,7 +1530,7 @@ void NukiBle::handleReturnMessage(Command returnCode, unsigned char* data, uint1
       unsigned char lockId[16];
       printBuffer((uint8_t*)data, dataLen, false, "authorizationId data", debugNukiHexData);
       if (isLockUltra()) {
-        memcpy(authorizationId, &data, 4);
+        memcpy(authorizationId, &data[0], 4);
         memcpy(lockId, &data[4], sizeof(lockId));
         receivedStatus = 0;
       } else {
@@ -1487,8 +1538,8 @@ void NukiBle::handleReturnMessage(Command returnCode, unsigned char* data, uint1
         memcpy(lockId, &data[36], sizeof(lockId));
         memcpy(challengeNonceK, &data[52], sizeof(challengeNonceK));
       }
-      printBuffer(authorizationId, sizeof(authorizationId), false, AUTH_ID_STORE_NAME);
-      printBuffer(lockId, sizeof(lockId), false, "lockId");
+      printBuffer(authorizationId, sizeof(authorizationId), false, AUTH_ID_STORE_NAME, debugNukiHexData);
+      printBuffer(lockId, sizeof(lockId), false, "lockId", debugNukiHexData);
       break;
     }
     case Command::AuthorizationEntry : {
@@ -1541,6 +1592,7 @@ void NukiBle::handleReturnMessage(Command returnCode, unsigned char* data, uint1
     }
     case Command::AuthorizationInfo : {
       printBuffer((uint8_t*)data, dataLen, false, "authorizationInfo", debugNukiHexData);
+      ultraAuthInfoCommandReceived = true;
       break;
     }
     case Command::AuthorizationEntryCount : {
