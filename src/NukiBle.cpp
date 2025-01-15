@@ -414,17 +414,21 @@ void NukiBle::updateConnectionState() {
   }
 
   if (lastStartTimeout != 0 && ((esp_timer_get_time() / 1000) - lastStartTimeout > timeoutDuration)) {
-    if (debugNukiConnect) {
-      ESP_LOGD("NukiBle", "disconnecting BLE on timeout");
+    if (pClient) {
+      if (pClient->isConnected()) {
+        if (debugNukiConnect) {
+          ESP_LOGD("NukiBle", "disconnecting BLE on timeout");
+        }
+            
+        if (altConnect) {
+          disconnect();
+        } else {
+          pClient->disconnect(); 
+        }
+      }        
     }
-  
-    if (altConnect) {
-      disconnect();
-      vTaskDelay(pdMS_TO_TICKS(200));
-    }
-    else if (pClient && pClient->isConnected()) {
-      pClient->disconnect();      
-    }
+    
+    lastStartTimeout = 0;
   }
 }
 
