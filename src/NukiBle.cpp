@@ -600,6 +600,9 @@ Nuki::CmdResult NukiBle::retrieveKeypadEntries(const uint16_t offset, const uint
     while (!keypadCodeCountReceived) {
       if ((esp_timer_get_time() / 1000) - timeNow > GENERAL_TIMEOUT) {
         ESP_LOGW("NukiBle", "Receive keypad count timeout");
+        if (altConnect) {
+          disconnect();
+        }
         return CmdResult::TimeOut;
       }
       vTaskDelay(pdMS_TO_TICKS(10));
@@ -613,6 +616,9 @@ Nuki::CmdResult NukiBle::retrieveKeypadEntries(const uint16_t offset, const uint
     while (nrOfReceivedKeypadCodes < getKeypadEntryCount()) {
       if ((esp_timer_get_time() / 1000) - timeNow > GENERAL_TIMEOUT) {
         ESP_LOGW("NukiBle", "Receive keypadcodes timeout");
+        if (altConnect) {
+          disconnect();
+        }
         return CmdResult::TimeOut;
       }
       vTaskDelay(pdMS_TO_TICKS(10));
