@@ -1,0 +1,24 @@
+## IDF Component Manager Manifest File
+version: "2.0.0"
+license: "GPL-3.0"
+description: "NukiBleEsp32"
+url: "https://github.com/AzonInc/NukiBleEsp32"
+repository: "https://github.com/AzonInc/NukiBleEsp32"
+dependencies:
+  crc16:
+    git: https://github.com/AzonInc/Crc16.git
+
+  esp-nimble-cpp:
+    git: https://github.com/h2zero/esp-nimble-cpp.git
+    version: fa468d360a56712f3f39a1fba74b97340ebca8a9
+
+  ble-scanner:
+    git: https://github.com/AzonInc/ble-scanner.git
+    version: "2.0.0"
+    
+  espressif/libsodium: "^1.0.20~2"
+
+  idf:
+    version: ">=5.3.0"
+    rules:
+      - if: "target in [esp32p4]"
