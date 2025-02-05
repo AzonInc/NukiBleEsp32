@@ -19,19 +19,19 @@ namespace Nuki {
       char tmp[16];
 
       if (strlen(header) > 0) {
-        ESP_LOGI("Nuki", "%s: ", header);
+        ESP_LOGI("NukiBle", "%s: ", header);
       }
 
       for (int i = 0; i < size; i++) {
         if (asChars) {
-          ESP_LOGI("Nuki", "%c", (char)buff[i]);
+          ESP_LOGI("NukiBle", "%c", (char)buff[i]);
         } else {
           sprintf(tmp, "%02x", buff[i]);
-          ESP_LOGI("Nuki", "%s ", tmp);
+          ESP_LOGI("NukiBle", "%s ", tmp);
         }
       }
       
-      ESP_LOGI("Nuki", "\n");
+      ESP_LOGI("NukiBle", "\n");
     }
   }
 
@@ -66,7 +66,7 @@ namespace Nuki {
     int result = crypto_secretbox_easy(output, input, len, nonce, keyS);
 
     if (result) {
-      ESP_LOGD("Nuki", "Encryption failed (length %llu, given result %i)\n", len, result);
+      ESP_LOGD("NukiBle", "Encryption failed (length %llu, given result %i)\n", len, result);
       return -1;
     }
     return len;
@@ -77,7 +77,7 @@ namespace Nuki {
     int result = crypto_secretbox_open_easy(output, input, len, nonce, keyS);
 
     if (result) {
-      ESP_LOGW("Nuki", "Decryption failed (length %llu, given result %i)\n", len, result);
+      ESP_LOGW("NukiBle", "Decryption failed (length %llu, given result %i)\n", len, result);
       return -1;
     }
     return len;
@@ -102,11 +102,11 @@ namespace Nuki {
     uint16_t dataCrc = calculateCrc(pData, 0, length - 2);
 
     if (!(receivedCrc == dataCrc)) {
-      ESP_LOGE("Nuki", "CRC CHECK FAILED!");
+      ESP_LOGE("NukiBle", "CRC CHECK FAILED!");
       return false;
     }
     if (debug) {
-      ESP_LOGD("Nuki", "CRC CHECK OK");
+      ESP_LOGD("NukiBle", "CRC CHECK OK");
     }
     return true;
   }

@@ -149,7 +149,7 @@ namespace Nuki {
 
     if (retrieveCredentials()) {
       if (debugNukiConnect) {
-        ESP_LOGD("Nuki", "Already paired");
+        ESP_LOGD("NukiBle", "Already paired");
       }
       isPaired = true;
       return PairingResult::Success;
@@ -161,7 +161,7 @@ namespace Nuki {
     if (pairingServiceAvailable && bleAddress != BLEAddress("", 0)) {
       pairingServiceAvailable = false;
       if (debugNukiConnect) {
-        ESP_LOGD("Nuki", "Nuki in pairing mode found");
+        ESP_LOGD("NukiBle", "Nuki in pairing mode found");
       }
       if (connectBle(bleAddress, true)) {
         crypto_box_keypair(myPublicKey, myPrivateKey);
@@ -184,12 +184,12 @@ namespace Nuki {
       }
     } else {
       if (debugNukiConnect) {
-        ESP_LOGD("Nuki", "No nuki in pairing mode found");
+        ESP_LOGD("NukiBle", "No nuki in pairing mode found");
       }
     }
 
     if (debugNukiConnect) {
-      ESP_LOGD("Nuki", "pairing result %d", (unsigned int)result);
+      ESP_LOGD("NukiBle", "pairing result %d", (unsigned int)result);
     }
 
     isPaired = (result == PairingResult::Success);
@@ -200,13 +200,13 @@ namespace Nuki {
     deleteCredentials();
     isPaired = false;
     if (debugNukiConnect) {
-      ESP_LOGD("Nuki", "[%s] Credentials deleted", deviceName.c_str());
+      ESP_LOGD("NukiBle", "[%s] Credentials deleted", deviceName.c_str());
     }
   }
 
   void NukiBle::resetHost() {
     if (debugNukiConnect) {
-      ESP_LOGD("Nuki", "[%s] Resetting BLE host", deviceName.c_str());
+      ESP_LOGD("NukiBle", "[%s] Resetting BLE host", deviceName.c_str());
     }
     
     ble_hs_sched_reset(0);
@@ -220,9 +220,9 @@ namespace Nuki {
 
       if (debugNukiConnect) {
         #if (ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0))
-        ESP_LOGD("Nuki", "connecting within: %s", pcTaskGetTaskName(xTaskGetCurrentTaskHandle()));
+        ESP_LOGD("NukiBle", "connecting within: %s", pcTaskGetTaskName(xTaskGetCurrentTaskHandle()));
         #else
-        ESP_LOGD("Nuki", "connecting within: %s", pcTaskGetName(xTaskGetCurrentTaskHandle()));
+        ESP_LOGD("NukiBle", "connecting within: %s", pcTaskGetName(xTaskGetCurrentTaskHandle()));
         #endif
       }
 
@@ -236,7 +236,7 @@ namespace Nuki {
             if(!pClient->isConnected()) {
               if(!pClient->connect(bleAddress, refreshServices)) {
                 if (debugNukiConnect) {
-                  ESP_LOGD("Nuki", "[%s] Reconnect failed", deviceName.c_str());
+                  ESP_LOGD("NukiBle", "[%s] Reconnect failed", deviceName.c_str());
                 }
                 connectRetry++;
                 #ifndef NUKI_NO_WDT_RESET
@@ -248,7 +248,7 @@ namespace Nuki {
                 refreshServices = false;
               }
               if (debugNukiConnect) {
-                ESP_LOGD("Nuki", "[%s] Reconnect success", deviceName.c_str());
+                ESP_LOGD("NukiBle", "[%s] Reconnect success", deviceName.c_str());
               }
             }
           }
@@ -258,7 +258,7 @@ namespace Nuki {
           if(NimBLEDevice::getCreatedClientCount() >= NIMBLE_MAX_CONNECTIONS)
           {
             if (debugNukiConnect) {
-              ESP_LOGD("Nuki", "[%s] Max clients reached - no more connections available", deviceName.c_str());
+              ESP_LOGD("NukiBle", "[%s] Max clients reached - no more connections available", deviceName.c_str());
             }
             connectRetry++;
             #ifndef NUKI_NO_WDT_RESET
@@ -272,7 +272,7 @@ namespace Nuki {
           pClient->setClientCallbacks(this);
           pClient->setConnectionParams(12,12,0,600,64,64);
           
-          ESP_LOGD("Nuki", "[%s] Connect timeout %d ms", deviceName.c_str(), connectTimeoutSec * 1000);
+          ESP_LOGD("NukiBle", "[%s] Connect timeout %d ms", deviceName.c_str(), connectTimeoutSec * 1000);
           pClient->setConnectTimeout(connectTimeoutSec * 1000);
 
           vTaskDelay(pdMS_TO_TICKS(300));
@@ -286,7 +286,7 @@ namespace Nuki {
 
           if (!pClient) {
             if (debugNukiConnect) {
-              ESP_LOGD("Nuki", "[%s] Failed to create client", deviceName.c_str());
+              ESP_LOGD("NukiBle", "[%s] Failed to create client", deviceName.c_str());
             }
             connectRetry++;
             #ifndef NUKI_NO_WDT_RESET
@@ -300,7 +300,7 @@ namespace Nuki {
         if(!pClient->isConnected()) {
           if (!pClient->connect(bleAddress, refreshServices)) {
             if (debugNukiConnect) {
-              ESP_LOGD("Nuki", "[%s] Failed to connect", deviceName.c_str());
+              ESP_LOGD("NukiBle", "[%s] Failed to connect", deviceName.c_str());
             }
             connectRetry++;
             #ifndef NUKI_NO_WDT_RESET
@@ -314,13 +314,13 @@ namespace Nuki {
         }
 
         if (debugNukiConnect) {
-          ESP_LOGD("Nuki", "[%s] Connected to: %s RSSI: %d", deviceName.c_str(), pClient->getPeerAddress().toString().c_str(), pClient->getRssi());
+          ESP_LOGD("NukiBle", "[%s] Connected to: %s RSSI: %d", deviceName.c_str(), pClient->getPeerAddress().toString().c_str(), pClient->getRssi());
         }
 
         if(pairing) {
           if (!registerOnGdioChar()) {
             if (debugNukiConnect) {
-              ESP_LOGD("Nuki", "[%s] Failed to connect on registering GDIO", deviceName.c_str());
+              ESP_LOGD("NukiBle", "[%s] Failed to connect on registering GDIO", deviceName.c_str());
             }
             connectRetry++;
             #ifndef NUKI_NO_WDT_RESET
@@ -332,7 +332,7 @@ namespace Nuki {
         } else {
           if (!registerOnUsdioChar()) {
             if (debugNukiConnect) {
-              ESP_LOGD("Nuki", "[%s] Failed to connect on registering USDIO", deviceName.c_str());
+              ESP_LOGD("NukiBle", "[%s] Failed to connect on registering USDIO", deviceName.c_str());
             }
             connectRetry++;
             #ifndef NUKI_NO_WDT_RESET
@@ -359,9 +359,9 @@ namespace Nuki {
       if (!pClient->isConnected()) {
         if (debugNukiConnect) {
           #if (ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0))
-          ESP_LOGD("Nuki", "connecting within: %s", pcTaskGetTaskName(xTaskGetCurrentTaskHandle()));
+          ESP_LOGD("NukiBle", "connecting within: %s", pcTaskGetTaskName(xTaskGetCurrentTaskHandle()));
           #else
-          ESP_LOGD("Nuki", "connecting within: %s", pcTaskGetName(xTaskGetCurrentTaskHandle()));
+          ESP_LOGD("NukiBle", "connecting within: %s", pcTaskGetName(xTaskGetCurrentTaskHandle()));
           #endif
         }
 
@@ -369,7 +369,7 @@ namespace Nuki {
         pClient->setConnectTimeout(connectTimeoutSec * 1000);
         while (connectRetry < connectRetries) {
           if (debugNukiConnect) {
-            ESP_LOGD("Nuki", "connection attempt %d", connectRetry);
+            ESP_LOGD("NukiBle", "connection attempt %d", connectRetry);
           }
           if (pClient->connect(bleAddress, true)) {
             if (pClient->isConnected() && registerOnGdioChar() && registerOnUsdioChar()) {  //doublecheck if is connected otherwise registering gdio crashes esp
@@ -377,11 +377,11 @@ namespace Nuki {
               connecting = false;
               return true;
             } else {
-              ESP_LOGW("Nuki", "BLE register on pairing or data Service/Char failed");
+              ESP_LOGW("NukiBle", "BLE register on pairing or data Service/Char failed");
             }
           } else {
             pClient->disconnect();
-            ESP_LOGW("Nuki", "BLE Connect failed, %d retries left", connectRetries - connectRetry - 1);
+            ESP_LOGW("NukiBle", "BLE Connect failed, %d retries left", connectRetries - connectRetry - 1);
           }
           connectRetry++;
           #ifndef NUKI_NO_WDT_RESET
@@ -396,7 +396,7 @@ namespace Nuki {
       }
       bleScanner->enableScanning(true);
       connecting = false;
-      ESP_LOGW("Nuki", "BLE Connect failed");
+      ESP_LOGW("NukiBle", "BLE Connect failed");
       return false;
     }
   }
@@ -411,7 +411,7 @@ namespace Nuki {
 
     if (lastStartTimeout != 0 && ((esp_timer_get_time() / 1000) - lastStartTimeout > timeoutDuration)) {
       if (debugNukiConnect) {
-        ESP_LOGD("Nuki", "disconnecting BLE on timeout");
+        ESP_LOGD("NukiBle", "disconnecting BLE on timeout");
       }
     
       if (altConnect) {
@@ -436,7 +436,7 @@ namespace Nuki {
     if (pClient) {
       if (pClient->isConnected()) {
         if (debugNukiConnect) {
-          ESP_LOGD("Nuki", "Disconnecting BLE");
+          ESP_LOGD("NukiBle", "Disconnecting BLE");
         }
 
         countDisconnects++;
@@ -445,7 +445,7 @@ namespace Nuki {
 
         while ((countDisconnects > 0 || pClient->isConnected()) && loop < 50) {
           if (debugNukiConnect) {
-            ESP_LOGD("Nuki", ".");
+            ESP_LOGD("NukiBle", ".");
           }
           loop++;
           vTaskDelay(pdMS_TO_TICKS(100));
@@ -454,7 +454,7 @@ namespace Nuki {
         if (countDisconnects > 0 || pClient->isConnected())
         {
           if (debugNukiConnect) {
-            ESP_LOGD("Nuki", "Error while disconnecting BLE client");
+            ESP_LOGD("NukiBle", "Error while disconnecting BLE client");
           }
           eventHandler->notify(EventType::BLE_ERROR_ON_DISCONNECT);
         }
@@ -499,7 +499,7 @@ namespace Nuki {
 
         if (isKeyTurnerUUID) {
           if (debugNukiConnect) {
-            ESP_LOGD("Nuki", "Nuki Advertising: %s", advertisedDevice->toString().c_str());
+            ESP_LOGD("NukiBle", "Nuki Advertising: %s", advertisedDevice->toString().c_str());
           }
 
           uint8_t cManufacturerData[100];
@@ -510,7 +510,7 @@ namespace Nuki {
 
             oBeacon.setData((uint8_t*)manufacturerData.c_str(), (uint8_t)manufacturerData.length());
             if (debugNukiConnect) {
-              ESP_LOGD("Nuki", "iBeacon ID: %04X Major: %d Minor: %d UUID: %s Power: %d", oBeacon.getManufacturerId(),
+              ESP_LOGD("NukiBle", "iBeacon ID: %04X Major: %d Minor: %d UUID: %s Power: %d", oBeacon.getManufacturerId(),
                     ENDIAN_CHANGE_U16(oBeacon.getMajor()), ENDIAN_CHANGE_U16(oBeacon.getMinor()),
                     oBeacon.getProximityUUID().toString().c_str(), oBeacon.getSignalPower());
             }
@@ -539,7 +539,7 @@ namespace Nuki {
       if (advertisedDevice->haveServiceData()) {
         if (advertisedDevice->getServiceData(pairingServiceUUID) != "") {
           if (debugNukiConnect) {
-            ESP_LOGD("Nuki", "Found nuki in pairing state: %s addr: %s", std::string(advertisedDevice->getName()).c_str(), std::string(advertisedDevice->getAddress()).c_str());
+            ESP_LOGD("NukiBle", "Found nuki in pairing state: %s addr: %s", std::string(advertisedDevice->getName()).c_str(), std::string(advertisedDevice->getAddress()).c_str());
           }
           bleAddress = advertisedDevice->getAddress();
           pairingServiceAvailable = true;
@@ -571,29 +571,29 @@ namespace Nuki {
       //wait for return of Keypad Code Count (0x0044)
       while (!keypadCodeCountReceived) {
         if ((esp_timer_get_time() / 1000) - timeNow > GENERAL_TIMEOUT) {
-          ESP_LOGW("Nuki", "Receive keypad count timeout");
+          ESP_LOGW("NukiBle", "Receive keypad count timeout");
           return CmdResult::TimeOut;
         }
         vTaskDelay(pdMS_TO_TICKS(10));
       }
       if (debugNukiCommand) {
-        ESP_LOGD("Nuki", "Keypad code count %d", getKeypadEntryCount());
+        ESP_LOGD("NukiBle", "Keypad code count %d", getKeypadEntryCount());
       }
 
       //wait for return of Keypad Codes (0x0045)
       timeNow = (esp_timer_get_time() / 1000);
       while (nrOfReceivedKeypadCodes < getKeypadEntryCount()) {
         if ((esp_timer_get_time() / 1000) - timeNow > GENERAL_TIMEOUT) {
-          ESP_LOGW("Nuki", "Receive keypadcodes timeout");
+          ESP_LOGW("NukiBle", "Receive keypadcodes timeout");
           return CmdResult::TimeOut;
         }
         vTaskDelay(pdMS_TO_TICKS(10));
       }
       if (debugNukiCommand) {
-        ESP_LOGD("Nuki", "%d codes received", nrOfReceivedKeypadCodes);
+        ESP_LOGD("NukiBle", "%d codes received", nrOfReceivedKeypadCodes);
       }
     } else {
-      ESP_LOGW("Nuki", "Retrieve keypad codes from lock failed");
+      ESP_LOGW("NukiBle", "Retrieve keypad codes from lock failed");
     }
     return result;
   }
@@ -610,7 +610,7 @@ namespace Nuki {
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
       if (debugNukiReadableData) {
-        ESP_LOGD("Nuki", "addKeyPadEntry, payloadlen: %d", sizeof(NewKeypadEntry));
+        ESP_LOGD("NukiBle", "addKeyPadEntry, payloadlen: %d", sizeof(NewKeypadEntry));
         printBuffer(action.payload, sizeof(NewKeypadEntry), false, "addKeyPadCode content: ", debugNukiHexData);
         NukiLock::logNewKeypadEntry(newKeypadEntry, debugNukiReadableData);
       }
@@ -630,7 +630,7 @@ namespace Nuki {
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
       if (debugNukiReadableData) {
-        ESP_LOGD("Nuki", "addKeyPadEntry, payloadlen: %d", sizeof(UpdatedKeypadEntry));
+        ESP_LOGD("NukiBle", "addKeyPadEntry, payloadlen: %d", sizeof(UpdatedKeypadEntry));
         printBuffer(action.payload, sizeof(UpdatedKeypadEntry), false, "updatedKeypad content: ", debugNukiHexData);
         NukiLock::logUpdatedKeypadEntry(updatedKeyPadEntry, debugNukiReadableData);
       }
@@ -703,7 +703,7 @@ namespace Nuki {
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
       if (debugNukiReadableData) {
-        ESP_LOGD("Nuki", "addAuthorizationEntry, payloadlen: %d", sizeof(NewAuthorizationEntry));
+        ESP_LOGD("NukiBle", "addAuthorizationEntry, payloadlen: %d", sizeof(NewAuthorizationEntry));
         printBuffer(action.payload, sizeof(NewAuthorizationEntry), false, "addAuthorizationEntry content: ", debugNukiHexData);
         NukiLock::logNewAuthorizationEntry(newAuthorizationEntry, debugNukiReadableData);
       }
@@ -738,7 +738,7 @@ namespace Nuki {
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
       if (debugNukiReadableData) {
-        ESP_LOGD("Nuki", "addAuthorizationEntry, payloadlen: %d", sizeof(UpdatedAuthorizationEntry));
+        ESP_LOGD("NukiBle", "addAuthorizationEntry, payloadlen: %d", sizeof(UpdatedAuthorizationEntry));
         printBuffer(action.payload, sizeof(UpdatedAuthorizationEntry), false, "updatedKeypad content: ", debugNukiHexData);
         NukiLock::logUpdatedAuthorizationEntry(updatedAuthorizationEntry, debugNukiReadableData);
       }
@@ -778,7 +778,7 @@ namespace Nuki {
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
       if (debugNukiReadableData) {
-        ESP_LOGD("Nuki", "Verify security pin code success");
+        ESP_LOGD("NukiBle", "Verify security pin code success");
       }
     }
     return result;
@@ -794,7 +794,7 @@ namespace Nuki {
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
       if (debugNukiReadableData) {
-        ESP_LOGD("Nuki", "Calibration executed");
+        ESP_LOGD("NukiBle", "Calibration executed");
       }
     }
     return result;
@@ -810,7 +810,7 @@ namespace Nuki {
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
       if (debugNukiReadableData) {
-        ESP_LOGD("Nuki", "Reboot executed");
+        ESP_LOGD("NukiBle", "Reboot executed");
       }
     }
     return result;
@@ -829,7 +829,7 @@ namespace Nuki {
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
       if (debugNukiReadableData) {
-        ESP_LOGD("Nuki", "Time set: %d-%d-%d %d:%d:%d", time.year, time.month, time.day, time.hour, time.minute, time.second);
+        ESP_LOGD("NukiBle", "Time set: %d-%d-%d %d:%d:%d", time.year, time.month, time.day, time.hour, time.minute, time.second);
       }
     }
     return result;
@@ -868,14 +868,14 @@ namespace Nuki {
         && (preferences.putBytes(AUTH_ID_STORE_NAME, authorizationId, 4) == 4)
       ) {
       if (debugNukiConnect) {
-        ESP_LOGD("Nuki", "Credentials saved:");
+        ESP_LOGD("NukiBle", "Credentials saved:");
         printBuffer(secretKeyK, sizeof(secretKeyK), false, SECRET_KEY_STORE_NAME, debugNukiHexData);
         printBuffer(currentBleAddress, 6, false, BLE_ADDRESS_STORE_NAME, debugNukiHexData);
         printBuffer(authorizationId, sizeof(authorizationId), false, AUTH_ID_STORE_NAME, debugNukiHexData);
-        ESP_LOGD("Nuki", "pincode: %d", pinCode);
+        ESP_LOGD("NukiBle", "pincode: %d", pinCode);
       }
     } else {
-      ESP_LOGE("Nuki", "ERROR saving credentials");
+      ESP_LOGE("NukiBle", "ERROR saving credentials");
     }
   }
 
@@ -917,24 +917,24 @@ namespace Nuki {
         bleAddress = BLEAddress(buff, 0);
 
         if (debugNukiConnect) {
-          ESP_LOGD("Nuki", "[%s] Credentials retrieved :", deviceName.c_str());
+          ESP_LOGD("NukiBle", "[%s] Credentials retrieved :", deviceName.c_str());
           printBuffer(secretKeyK, sizeof(secretKeyK), false, SECRET_KEY_STORE_NAME, debugNukiHexData);
-          ESP_LOGD("Nuki", "bleAddress: %s", bleAddress.toString().c_str());
+          ESP_LOGD("NukiBle", "bleAddress: %s", bleAddress.toString().c_str());
           printBuffer(authorizationId, sizeof(authorizationId), false, AUTH_ID_STORE_NAME, debugNukiHexData);
         }
 
         if (isCharArrayEmpty(secretKeyK, sizeof(secretKeyK)) || isCharArrayEmpty(authorizationId, sizeof(authorizationId))) {
-          ESP_LOGW("Nuki", "secret key OR authorizationId is empty: not paired");
+          ESP_LOGW("NukiBle", "secret key OR authorizationId is empty: not paired");
           giveNukiBleSemaphore();
           return false;
         }
 
         if (pinCode == 0) {
-          ESP_LOGW("Nuki", "Pincode is 000000, probably not defined");
+          ESP_LOGW("NukiBle", "Pincode is 000000, probably not defined");
         }
 
       } else {
-        ESP_LOGE("Nuki", "Error getting data from NVS");
+        ESP_LOGE("NukiBle", "Error getting data from NVS");
         giveNukiBleSemaphore();
         return false;
       }
@@ -955,7 +955,7 @@ namespace Nuki {
       giveNukiBleSemaphore();
     }
     if (debugNukiConnect) {
-      ESP_LOGD("Nuki", "Credentials deleted");
+      ESP_LOGD("NukiBle", "Credentials deleted");
     }
   }
 
@@ -971,7 +971,7 @@ namespace Nuki {
       case PairingState::ReqRemPubKey: {
         //Request remote public key (Sent message should be 0100030027A7)
         if (debugNukiConnect) {
-          ESP_LOGD("Nuki", "##################### REQUEST REMOTE PUBLIC KEY #########################");
+          ESP_LOGD("NukiBle", "##################### REQUEST REMOTE PUBLIC KEY #########################");
         }
         unsigned char buff[sizeof(Command)];
         uint16_t cmd = (uint16_t)Command::PublicKey;
@@ -987,21 +987,21 @@ namespace Nuki {
       }
       case PairingState::SendPubKey: {
         if (debugNukiConnect) {
-          ESP_LOGD("Nuki", "##################### SEND CLIENT PUBLIC KEY #########################");
+          ESP_LOGD("NukiBle", "##################### SEND CLIENT PUBLIC KEY #########################");
         }
         sendPlainMessage(Command::PublicKey, myPublicKey, sizeof(myPublicKey));
         nukiPairingResultState = PairingState::GenKeyPair;
       }
       case PairingState::GenKeyPair: {
         if (debugNukiConnect) {
-          ESP_LOGD("Nuki", "##################### CALCULATE DH SHARED KEY s #########################");
+          ESP_LOGD("NukiBle", "##################### CALCULATE DH SHARED KEY s #########################");
         }
         unsigned char sharedKeyS[32] = {0x00};
         crypto_scalarmult_curve25519(sharedKeyS, myPrivateKey, remotePublicKey);
         printBuffer(sharedKeyS, sizeof(sharedKeyS), false, "Shared key s", debugNukiHexData);
 
         if (debugNukiConnect) {
-          ESP_LOGD("Nuki", "##################### DERIVE LONG TERM SHARED SECRET KEY k #########################");
+          ESP_LOGD("NukiBle", "##################### DERIVE LONG TERM SHARED SECRET KEY k #########################");
         }
         unsigned char in[16];
         memset(in, 0, 16);
@@ -1013,7 +1013,7 @@ namespace Nuki {
       case PairingState::CalculateAuth: {
         if (isCharArrayNotEmpty(challengeNonceK, sizeof(challengeNonceK))) {
           if (debugNukiConnect) {
-            ESP_LOGD("Nuki", "##################### CALCULATE/VERIFY AUTHENTICATOR #########################");
+            ESP_LOGD("NukiBle", "##################### CALCULATE/VERIFY AUTHENTICATOR #########################");
           }
           //concatenate local public key, remote public key and receive challenge data
           unsigned char hmacPayload[96];
@@ -1030,7 +1030,7 @@ namespace Nuki {
       }
       case PairingState::SendAuth: {
         if (debugNukiConnect) {
-          ESP_LOGD("Nuki", "##################### SEND AUTHENTICATOR #########################");
+          ESP_LOGD("NukiBle", "##################### SEND AUTHENTICATOR #########################");
         }
         sendPlainMessage(Command::AuthorizationAuthenticator, authenticator, sizeof(authenticator));
         nukiPairingResultState = PairingState::SendAuthData;
@@ -1038,7 +1038,7 @@ namespace Nuki {
       case PairingState::SendAuthData: {
         if (isCharArrayNotEmpty(challengeNonceK, sizeof(challengeNonceK))) {
           if (debugNukiConnect) {
-            ESP_LOGD("Nuki", "##################### SEND AUTHORIZATION DATA #########################");
+            ESP_LOGD("NukiBle", "##################### SEND AUTHORIZATION DATA #########################");
           }
           unsigned char authorizationData[101] = {};
           unsigned char authorizationDataIdType[1] = {(unsigned char)authorizationIdType };
@@ -1077,7 +1077,7 @@ namespace Nuki {
       case PairingState::SendAuthIdConf: {
         if (isCharArrayNotEmpty(authorizationId, sizeof(authorizationId))) {
           if (debugNukiConnect) {
-            ESP_LOGD("Nuki", "##################### SEND AUTHORIZATION ID confirmation #########################");
+            ESP_LOGD("NukiBle", "##################### SEND AUTHORIZATION ID confirmation #########################");
           }
           unsigned char confirmationData[36] = {};
 
@@ -1098,20 +1098,20 @@ namespace Nuki {
       case PairingState::RecStatus: {
         if (receivedStatus == 0) {
           if (debugNukiConnect) {
-            ESP_LOGD("Nuki", "####################### PAIRING DONE ###############################################");
+            ESP_LOGD("NukiBle", "####################### PAIRING DONE ###############################################");
           }
           nukiPairingResultState = PairingState::Success;
         }
         break;
       }
       default: {
-        ESP_LOGE("Nuki", "Unknown pairing status");
+        ESP_LOGE("NukiBle", "Unknown pairing status");
         nukiPairingResultState = PairingState::Timeout;
       }
     }
 
     if ((esp_timer_get_time() / 1000) - timeNow > PAIRING_TIMEOUT) {
-      ESP_LOGW("Nuki", "Pairing timeout");
+      ESP_LOGW("NukiBle", "Pairing timeout");
       nukiPairingResultState = PairingState::Timeout;
     }
 
@@ -1140,9 +1140,9 @@ namespace Nuki {
     memcpy(&plainDataWithCrc[sizeof(plainData)], &dataCrc, sizeof(dataCrc));
 
     if (debugNukiHexData) {
-      ESP_LOGD("Nuki", "payloadlen: %d", payloadLen);
-      ESP_LOGD("Nuki", "sizeof(plainData): %d", sizeof(plainData));
-      ESP_LOGD("Nuki", "CRC: %02x", dataCrc);
+      ESP_LOGD("NukiBle", "payloadlen: %d", payloadLen);
+      ESP_LOGD("NukiBle", "sizeof(plainData): %d", sizeof(plainData));
+      ESP_LOGD("NukiBle", "CRC: %02x", dataCrc);
     }
     printBuffer((uint8_t*)plainDataWithCrc, sizeof(plainDataWithCrc), false, "Plain data with CRC: ", debugNukiHexData);
 
@@ -1174,10 +1174,10 @@ namespace Nuki {
         printBuffer((uint8_t*)dataToSend, sizeof(dataToSend), false, "Sending encrypted message", debugNukiHexData);
         return pUsdioCharacteristic->writeValue((uint8_t*)dataToSend, sizeof(dataToSend), true);
       } else {
-        ESP_LOGW("Nuki", "Send encr msg failed due to unable to connect");
+        ESP_LOGW("NukiBle", "Send encr msg failed due to unable to connect");
       }
     } else {
-      ESP_LOGW("Nuki", "Send msg failed due to encryption fail");
+      ESP_LOGW("NukiBle", "Send msg failed due to encryption fail");
     }
     return false;
   }
@@ -1198,13 +1198,13 @@ namespace Nuki {
     memcpy(&dataToSend[2 + payloadLen], &dataCrc, sizeof(dataCrc));
     printBuffer((uint8_t*)dataToSend, payloadLen + 4, false, "Sending plain message", debugNukiHexData);
     if (debugNukiHexData) {
-      ESP_LOGD("Nuki", "Command identifier: %02x, CRC: %04x", (unsigned int)commandIdentifier, dataCrc);
+      ESP_LOGD("NukiBle", "Command identifier: %02x, CRC: %04x", (unsigned int)commandIdentifier, dataCrc);
     }
 
     if (connectBle(bleAddress, true)) {
       return pGdioCharacteristic->writeValue((uint8_t*)dataToSend, payloadLen + 4, true);
     } else {
-      ESP_LOGW("Nuki", "Send plain msg failed due to unable to connect");
+      ESP_LOGW("NukiBle", "Send plain msg failed due to unable to connect");
     }
     return false;
   }
@@ -1220,32 +1220,32 @@ namespace Nuki {
           using namespace std::placeholders;
           NimBLERemoteCharacteristic::notify_callback callback = std::bind(&NukiBle::notifyCallback, this, _1, _2, _3, _4);
           if(!pGdioCharacteristic->subscribe(false, callback, true)) {
-            ESP_LOGW("Nuki", "Unable to subscribe to GDIO characteristic");
+            ESP_LOGW("NukiBle", "Unable to subscribe to GDIO characteristic");
             refreshServices = true;
             disconnect();
             return false;
           }
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "GDIO characteristic registered");
+            ESP_LOGD("NukiBle", "GDIO characteristic registered");
           }
           vTaskDelay(pdMS_TO_TICKS(100));
           return true;
         } else {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "GDIO characteristic canIndicate false, stop connecting");
+            ESP_LOGD("NukiBle", "GDIO characteristic canIndicate false, stop connecting");
           }
           refreshServices = true;
           disconnect();
           return false;
         }
       } else {
-        ESP_LOGW("Nuki", "Unable to get GDIO characteristic");
+        ESP_LOGW("NukiBle", "Unable to get GDIO characteristic");
         refreshServices = true;
         disconnect();
         return false;
       }
     } else {
-      ESP_LOGW("Nuki", "Unable to get keyturner pairing service");
+      ESP_LOGW("NukiBle", "Unable to get keyturner pairing service");
       refreshServices = true;
       disconnect();
       return false;
@@ -1264,32 +1264,32 @@ namespace Nuki {
           using namespace std::placeholders;
           NimBLERemoteCharacteristic::notify_callback callback = std::bind(&NukiBle::notifyCallback, this, _1, _2, _3, _4);
           if(!pUsdioCharacteristic->subscribe(false, callback, true)) {
-            ESP_LOGW("Nuki", "Unable to subscribe to USDIO characteristic");
+            ESP_LOGW("NukiBle", "Unable to subscribe to USDIO characteristic");
             refreshServices = true;
             disconnect();
             return false;
           }
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "USDIO characteristic registered");
+            ESP_LOGD("NukiBle", "USDIO characteristic registered");
           }
           vTaskDelay(pdMS_TO_TICKS(100));
           return true;
         } else {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "USDIO characteristic canIndicate false, stop connecting");
+            ESP_LOGD("NukiBle", "USDIO characteristic canIndicate false, stop connecting");
           }
           refreshServices = true;
           disconnect();
           return false;
         }
       } else {
-        ESP_LOGW("Nuki", "Unable to get USDIO characteristic");
+        ESP_LOGW("NukiBle", "Unable to get USDIO characteristic");
         refreshServices = true;
         disconnect();
         return false;
       }
     } else {
-      ESP_LOGW("Nuki", "Unable to get keyturner data service");
+      ESP_LOGW("NukiBle", "Unable to get keyturner data service");
       refreshServices = true;
       disconnect();
       return false;
@@ -1301,7 +1301,7 @@ namespace Nuki {
   void NukiBle::notifyCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* recData, size_t length, bool isNotify) {
     lastHeartbeat = (esp_timer_get_time() / 1000);
     if (debugNukiCommunication) {
-      ESP_LOGD("Nuki", "Notify callback for characteristic: %s of length: %d", pBLERemoteCharacteristic->getUUID().toString().c_str(), length);
+      ESP_LOGD("NukiBle", "Notify callback for characteristic: %s of length: %d", pBLERemoteCharacteristic->getUUID().toString().c_str(), length);
     }
     printBuffer((uint8_t*)recData, length, false, "Received data", debugNukiHexData);
 
@@ -1331,7 +1331,7 @@ namespace Nuki {
       decode(decrData, encrData, encrMsgLen, recNonce, secretKeyK);
 
       if (debugNukiCommunication) {
-        ESP_LOGD("Nuki", "Received encrypted msg, len: %d", encrMsgLen);
+        ESP_LOGD("NukiBle", "Received encrypted msg, len: %d", encrMsgLen);
       }
       printBuffer(recNonce, sizeof(recNonce), false, "received nonce", debugNukiHexData);
       printBuffer(recAuthorizationId, sizeof(recAuthorizationId), false, "Received AuthorizationId", debugNukiHexData);
@@ -1353,7 +1353,7 @@ namespace Nuki {
     switch (returnCode) {
       case Command::RequestData : {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "requestData");
+          ESP_LOGD("NukiBle", "requestData");
         }
         break;
       }
@@ -1401,21 +1401,21 @@ namespace Nuki {
         receivedStatus = data[0];
         if (debugNukiCommunication) {
           if (receivedStatus == 0) {
-            ESP_LOGD("Nuki", "command COMPLETE");
+            ESP_LOGD("NukiBle", "command COMPLETE");
           } else if (receivedStatus == 1) {
-            ESP_LOGD("Nuki", "command ACCEPTED");
+            ESP_LOGD("NukiBle", "command ACCEPTED");
           }
         }
         break;
       }
       case Command::OpeningsClosingsSummary : {
         printBuffer((uint8_t*)data, dataLen, false, "openingsClosingsSummary", debugNukiHexData);
-        ESP_LOGW("Nuki", "NOT IMPLEMENTED ONLY FOR NUKI v1"); //command is not available on Nuki v2 (only on Nuki v1)
+        ESP_LOGW("NukiBle", "NOT IMPLEMENTED ONLY FOR NUKI v1"); //command is not available on Nuki v2 (only on Nuki v1)
         break;
       }
 
       case Command::ErrorReport : {
-        ESP_LOGE("Nuki", "Error: %02x for command: %02x:%02x", data[0], data[2], data[1]);
+        ESP_LOGE("NukiBle", "Error: %02x for command: %02x:%02x", data[0], data[2], data[1]);
         memcpy(&errorCode, &data[0], sizeof(errorCode));
         logErrorCode(data[0]);
         if ((uint8_t)data[0] == (uint8_t)0x21) {
@@ -1437,14 +1437,14 @@ namespace Nuki {
         printBuffer((uint8_t*)data, dataLen, false, "authorizationEntryCount", debugNukiHexData);
         uint16_t count = 0;
         memcpy(&count, data, 2);
-        ESP_LOGD("Nuki", "authorizationEntryCount: %d", count);
+        ESP_LOGD("NukiBle", "authorizationEntryCount: %d", count);
         break;
       }
       case Command::LogEntryCount : {
         memcpy(&loggingEnabled, data, sizeof(logEntryCount));
         memcpy(&logEntryCount, &data[1], sizeof(logEntryCount));
         if (debugNukiReadableData) {
-          ESP_LOGD("Nuki", "Logging enabled: %d, total nr of log entries: %d", loggingEnabled, logEntryCount);
+          ESP_LOGD("NukiBle", "Logging enabled: %d, total nr of log entries: %d", loggingEnabled, logEntryCount);
         }
         printBuffer((uint8_t*)data, dataLen, false, "logEntryCount", debugNukiHexData);
         break;
@@ -1464,7 +1464,7 @@ namespace Nuki {
         if (debugNukiReadableData) {
           uint16_t count = 0;
           memcpy(&count, data, 2);
-          ESP_LOGD("Nuki", "keyPadCodeCount: %d", count);
+          ESP_LOGD("NukiBle", "keyPadCodeCount: %d", count);
         }
 
         break;
@@ -1486,21 +1486,21 @@ namespace Nuki {
         break;
       }
       default:
-        ESP_LOGE("Nuki", "UNKNOWN RETURN COMMAND: %04x", (unsigned int)returnCode);
+        ESP_LOGE("NukiBle", "UNKNOWN RETURN COMMAND: %04x", (unsigned int)returnCode);
     }
   }
 
   void NukiBle::onConnect(BLEClient*) {
     extendDisconnectTimeout();
     if (debugNukiConnect) {
-      ESP_LOGD("Nuki", "BLE connected");
+      ESP_LOGD("NukiBle", "BLE connected");
     }
   };
 
   void NukiBle::onDisconnect(BLEClient*, int reason)
   {
     if (debugNukiConnect) {
-      ESP_LOGD("Nuki", "BLE disconnected");
+      ESP_LOGD("NukiBle", "BLE disconnected");
     }
     countDisconnects = 0;
   };
@@ -1521,7 +1521,7 @@ namespace Nuki {
     #endif
 
     if (!result) {
-      ESP_LOGD("Nuki", "%s FAILED to take Nuki semaphore. Owner %s", taker.c_str(), owner.c_str());
+      ESP_LOGD("NukiBle", "%s FAILED to take Nuki semaphore. Owner %s", taker.c_str(), owner.c_str());
     } else {
       owner = taker;
     }
@@ -1572,6 +1572,60 @@ namespace Nuki {
 
   void NukiBle::setDebugCommand(bool enable) {
     debugNukiCommand = enable;
+  }
+
+  void NukiBle::logMessage(const char* message, int level) {
+    switch (level) {
+      case 1:
+        ESP_LOGE("NukiBle", message);
+        break;
+      case 2:
+        ESP_LOGW("NukiBle", message);
+        break;
+      case 3:
+        ESP_LOGI("NukiBle", message);
+        break;
+      case 4:
+      default:
+        ESP_LOGD("NukiBle", message);
+        break;
+    }
+  }
+  
+  void NukiBle::logMessageVar(const char* message, unsigned int var, int level) {
+    switch (level) {
+      case 1:
+        ESP_LOGE("NukiBle", message, var);
+        break;
+      case 2:
+        ESP_LOGW("NukiBle", message, var);
+        break;
+      case 3:
+        ESP_LOGI("NukiBle", message, var);
+        break;
+      case 4:
+      default:
+        ESP_LOGD("NukiBle", message, var);
+        break;
+    }
+  }
+  
+  void NukiBle::logMessageVar(const char* message, const char* var, int level) {
+    switch (level) {
+      case 1:
+        ESP_LOGE("NukiBle", message, var);
+        break;
+      case 2:
+        ESP_LOGW("NukiBle", message, var);
+        break;
+      case 3:
+        ESP_LOGI("NukiBle", message, var);
+        break;
+      case 4:
+      default:
+        ESP_LOGD("NukiBle", message, var);
+        break;
+    }
   }
 
 } // namespace Nuki

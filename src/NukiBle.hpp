@@ -3,7 +3,6 @@
 
 #include <cstring>
 #include <cstdint>
-#include "esp_log.h"
 #include "esp_timer.h"
 #include "esp_task_wdt.h"
 #include "freertos/FreeRTOS.h"
@@ -15,27 +14,27 @@ namespace Nuki {
   Nuki::CmdResult NukiBle::executeAction(const TDeviceAction action) {
     if (!altConnect) {
       if ((esp_timer_get_time() / 1000) - lastHeartbeat > HEARTBEAT_TIMEOUT) {
-        ESP_LOGE("Nuki", "Lock Heartbeat timeout, command failed");
+        logMessage("Lock Heartbeat timeout, command failed", 1);
         return Nuki::CmdResult::Error;
       }
     }
     if (debugNukiConnect) {
-      ESP_LOGD("Nuki", "************************ CHECK PAIRED ************************");
+      logMessage("************************ CHECK PAIRED ************************");
     }
     if (retrieveCredentials()) {
       if (debugNukiConnect) {
-        ESP_LOGD("Nuki", "Credentials retrieved from preferences, ready for commands");
+        logMessage("Credentials retrieved from preferences, ready for commands");
       }
     } else {
       if (debugNukiConnect) {
-        ESP_LOGD("Nuki", "Credentials NOT retrieved from preferences, first pair with the lock");
+        logMessage("Credentials NOT retrieved from preferences, first pair with the lock");
       }
       return Nuki::CmdResult::NotPaired;
     }
 
     if (takeNukiBleSemaphore("exec Action")) {
       if (debugNukiCommunication) {
-        ESP_LOGD("Nuki", "Start executing: %02x ", (unsigned int)action.command);
+        logMessageVar("Start executing: %02x ", (unsigned int)action.command);
       }
 
       while (1) {
@@ -55,7 +54,7 @@ namespace Nuki {
           result = cmdChallStateMachine(action, true);
         }
         else {
-          ESP_LOGW("Nuki", "Unknown cmd type");
+          logMessage("Unknown cmd type", 2);
           giveNukiBleSemaphore();
           disconnect();
           return Nuki::CmdResult::Failed;
@@ -83,7 +82,7 @@ namespace Nuki {
     switch (nukiCommandState) {
       case CommandState::Idle: {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "************************ SENDING COMMAND [%d] ************************", (unsigned int)action.command);
+          logMessageVar("************************ SENDING COMMAND [%d] ************************", (unsigned int)action.command);
         }
         lastMsgCodeReceived = Command::Empty;
 
@@ -92,7 +91,7 @@ namespace Nuki {
           nukiCommandState = CommandState::CmdSent;
         } else {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ SENDING COMMAND FAILED ************************");
+            logMessage("************************ SENDING COMMAND FAILED ************************");
           }
           if (altConnect) {
             disconnect();
@@ -105,7 +104,7 @@ namespace Nuki {
       }
       case CommandState::CmdSent: {
         if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
-          ESP_LOGW("Nuki", "************************ COMMAND FAILED TIMEOUT************************");
+          logMessage("************************ COMMAND FAILED TIMEOUT************************", 2);
           if (altConnect) {
             disconnect();
           }
@@ -113,14 +112,14 @@ namespace Nuki {
           return Nuki::CmdResult::TimeOut;
         } else if (lastMsgCodeReceived != Command::ErrorReport && lastMsgCodeReceived != Command::Empty) {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ COMMAND DONE ************************");
+            logMessage("************************ COMMAND DONE ************************");
           }
           nukiCommandState = CommandState::Idle;
           lastMsgCodeReceived = Command::Empty;
           return Nuki::CmdResult::Success;
         } else if (lastMsgCodeReceived == Command::ErrorReport && errorCode != 69) {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ COMMAND FAILED ************************");
+            logMessage("************************ COMMAND FAILED ************************");
           }
           if (altConnect) {
             disconnect();
@@ -130,7 +129,7 @@ namespace Nuki {
           return Nuki::CmdResult::Failed;
         } else if (lastMsgCodeReceived == Command::ErrorReport && errorCode == 69) {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ COMMAND FAILED LOCK BUSY ************************");
+            logMessage("************************ COMMAND FAILED LOCK BUSY ************************");
           }
           if (altConnect) {
             disconnect();
@@ -142,7 +141,7 @@ namespace Nuki {
       }
       break;
       default: {
-        ESP_LOGW("Nuki", "Unknown request command state");
+        logMessage("Unknown request command state", 2);
         if (altConnect) {
           disconnect();
         }
@@ -159,7 +158,7 @@ namespace Nuki {
     switch (nukiCommandState) {
       case CommandState::Idle: {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "************************ SENDING CHALLENGE ************************");
+          logMessage("************************ SENDING CHALLENGE ************************");
         }
         lastMsgCodeReceived = Command::Empty;
         unsigned char payload[sizeof(Command)] = {0x04, 0x00};  //challenge
@@ -169,7 +168,7 @@ namespace Nuki {
           nukiCommandState = CommandState::ChallengeSent;
         } else {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ SENDING CHALLENGE FAILED ************************");
+            logMessage("************************ SENDING CHALLENGE FAILED ************************");
           }
           if (altConnect) {
             disconnect();
@@ -182,10 +181,10 @@ namespace Nuki {
       }
       case CommandState::ChallengeSent: {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "************************ RECEIVING CHALLENGE RESPONSE************************");
+          logMessage("************************ RECEIVING CHALLENGE RESPONSE************************");
         }
         if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
-          ESP_LOGW("Nuki", "************************ COMMAND FAILED TIMEOUT ************************");
+          logMessage("************************ COMMAND FAILED TIMEOUT ************************", 2);
           if (altConnect) {
             disconnect();
           }
@@ -199,7 +198,7 @@ namespace Nuki {
       }
       case CommandState::ChallengeRespReceived: {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "************************ SENDING COMMAND [%d] ************************", (unsigned int)action.command);
+          logMessageVar("************************ SENDING COMMAND [%d] ************************", (unsigned int)action.command);
         }
         lastMsgCodeReceived = Command::Empty;
         crcCheckOke = false;
@@ -220,7 +219,7 @@ namespace Nuki {
           nukiCommandState = CommandState::CmdSent;
         } else {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ SENDING COMMAND FAILED ************************");
+            logMessage("************************ SENDING COMMAND FAILED ************************");
           }
           if (altConnect) {
             disconnect();
@@ -233,10 +232,10 @@ namespace Nuki {
       }
       case CommandState::CmdSent: {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "************************ RECEIVING DATA ************************");
+          logMessage("************************ RECEIVING DATA ************************");
         }
         if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
-          ESP_LOGW("Nuki", "************************ COMMAND FAILED TIMEOUT ************************");
+          logMessage("************************ COMMAND FAILED TIMEOUT ************************", 2);
           if (altConnect) {
             disconnect();
           }
@@ -244,7 +243,7 @@ namespace Nuki {
           return Nuki::CmdResult::TimeOut;
         } else if (lastMsgCodeReceived == Command::ErrorReport && errorCode != 69) {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ COMMAND FAILED ************************");
+             logMessage("************************ SENDING COMMAND FAILED ************************");
           }
           if (altConnect) {
             disconnect();
@@ -254,7 +253,7 @@ namespace Nuki {
           return Nuki::CmdResult::Failed;
         } else if (lastMsgCodeReceived == Command::ErrorReport && errorCode == 69) {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ COMMAND FAILED LOCK BUSY ************************");
+            logMessage("************************ COMMAND FAILED LOCK BUSY ************************");
           }
           if (altConnect) {
             disconnect();
@@ -264,7 +263,7 @@ namespace Nuki {
           return Nuki::CmdResult::Lock_Busy;
         } else if (crcCheckOke) {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ DATA RECEIVED ************************");
+            logMessage("************************ DATA RECEIVED ************************");
           }
           nukiCommandState = CommandState::Idle;
           return Nuki::CmdResult::Success;
@@ -272,7 +271,7 @@ namespace Nuki {
         break;
       }
       default:
-        ESP_LOGW("Nuki", "Unknown request command state");
+        logMessage("Unknown request command state", 2);
         if (altConnect) {
           disconnect();
         }
@@ -288,7 +287,7 @@ namespace Nuki {
     switch (nukiCommandState) {
       case CommandState::Idle: {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "************************ SENDING CHALLENGE ************************");
+          logMessage("************************ SENDING CHALLENGE ************************");
         }
         lastMsgCodeReceived = Command::Empty;
         unsigned char payload[sizeof(Command)] = {0x04, 0x00};  //challenge
@@ -298,7 +297,7 @@ namespace Nuki {
           nukiCommandState = CommandState::ChallengeSent;
         } else {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ SENDING CHALLENGE FAILED ************************");
+            logMessage("************************ SENDING CHALLENGE FAILED ************************");
           }
           if (altConnect) {
             disconnect();
@@ -311,10 +310,10 @@ namespace Nuki {
       }
       case CommandState::ChallengeSent: {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "************************ RECEIVING CHALLENGE RESPONSE************************");
+          logMessage("************************ RECEIVING CHALLENGE RESPONSE************************");
         }
         if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
-          ESP_LOGW("Nuki", "************************ COMMAND FAILED TIMEOUT ************************");
+          logMessage("************************ COMMAND FAILED TIMEOUT ************************", 2);
           if (altConnect) {
             disconnect();
           }
@@ -328,7 +327,7 @@ namespace Nuki {
       }
       case CommandState::ChallengeRespReceived: {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "************************ SENDING COMMAND [%d] ************************", (unsigned int)action.command);
+          logMessageVar("************************ SENDING COMMAND [%d] ************************", (unsigned int)action.command);
         }
         lastMsgCodeReceived = Command::Empty;
         //add received challenge nonce to payload
@@ -342,7 +341,7 @@ namespace Nuki {
           nukiCommandState = CommandState::CmdSent;
         } else {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ SENDING COMMAND FAILED ************************");
+            logMessage("************************ SENDING COMMAND FAILED ************************");
           }
           if (altConnect) {
             disconnect();
@@ -355,10 +354,10 @@ namespace Nuki {
       }
       case CommandState::CmdSent: {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "************************ RECEIVING ACCEPT ************************");
+          logMessage("************************ RECEIVING ACCEPT ************************");
         }
         if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
-          ESP_LOGW("Nuki", "************************ ACCEPT FAILED TIMEOUT ************************");
+          logMessage("************************ ACCEPT FAILED TIMEOUT ************************", 2);
           if (altConnect) {
             disconnect();
           }
@@ -371,7 +370,7 @@ namespace Nuki {
         } else if (lastMsgCodeReceived == Command::Status && (CommandStatus)receivedStatus == CommandStatus::Complete) {
           //accept was skipped on lock because ie unlock command when lock allready unlocked?
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ COMMAND SUCCESS (SKIPPED) ************************");
+            logMessage("************************ COMMAND SUCCESS (SKIPPED) ************************");
           }
           nukiCommandState = CommandState::Idle;
           lastMsgCodeReceived = Command::Empty;
@@ -381,10 +380,10 @@ namespace Nuki {
       }
       case CommandState::CmdAccepted: {
         if (debugNukiCommunication) {
-          ESP_LOGD("Nuki", "************************ RECEIVING COMPLETE ************************");
+          logMessage("************************ RECEIVING COMPLETE ************************");
         }
         if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
-          ESP_LOGW("Nuki", "************************ COMMAND FAILED TIMEOUT ************************");
+          logMessage("************************ COMMAND FAILED TIMEOUT ************************", 2);
           if (altConnect) {
             disconnect();
           }
@@ -392,7 +391,7 @@ namespace Nuki {
           return Nuki::CmdResult::TimeOut;
         } else if (lastMsgCodeReceived == Command::ErrorReport && errorCode != 69) {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ COMMAND FAILED ************************");
+             logMessage("************************ SENDING COMMAND FAILED ************************");
           }
           if (altConnect) {
             disconnect();
@@ -402,7 +401,7 @@ namespace Nuki {
           return Nuki::CmdResult::Failed;
         } else if (lastMsgCodeReceived == Command::ErrorReport && errorCode == 69) {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ COMMAND FAILED LOCK BUSY ************************");
+            logMessage("************************ COMMAND FAILED LOCK BUSY ************************");
           }
           if (altConnect) {
             disconnect();
@@ -412,7 +411,7 @@ namespace Nuki {
           return Nuki::CmdResult::Lock_Busy;
         } else if ((CommandStatus)lastMsgCodeReceived == CommandStatus::Complete) {
           if (debugNukiCommunication) {
-            ESP_LOGD("Nuki", "************************ COMMAND SUCCESS ************************");
+            logMessage("************************ COMMAND SUCCESS ************************");
           }
           nukiCommandState = CommandState::Idle;
           lastMsgCodeReceived = Command::Empty;
@@ -421,7 +420,7 @@ namespace Nuki {
         break;
       }
       default:
-        ESP_LOGW("Nuki", "Unknown request command state");
+        logMessage("Unknown request command state", 2);
         if (altConnect) {
           disconnect();
         }

@@ -44,7 +44,7 @@ bool Preferences::begin(const char *name, bool readOnly, const char *partition_l
   if (partition_label != NULL) {
     err = nvs_flash_init_partition(partition_label);
     if (err) {
-      ESP_LOGE("Nuki", "nvs_flash_init_partition failed: %s", nvs_error(err));
+      ESP_LOGE("NukiBle.Preferences", "nvs_flash_init_partition failed: %s", nvs_error(err));
       return false;
     }
     err = nvs_open_from_partition(partition_label, name, readOnly ? NVS_READONLY : NVS_READWRITE, &_handle);
@@ -52,7 +52,7 @@ bool Preferences::begin(const char *name, bool readOnly, const char *partition_l
     err = nvs_open(name, readOnly ? NVS_READONLY : NVS_READWRITE, &_handle);
   }
   if (err) {
-    ESP_LOGE("Nuki", "nvs_open failed: %s", nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_open failed: %s", nvs_error(err));
     return false;
   }
   _started = true;
@@ -77,12 +77,12 @@ bool Preferences::clear() {
   }
   esp_err_t err = nvs_erase_all(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_erase_all fail: %s", nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_erase_all fail: %s", nvs_error(err));
     return false;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s", nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s", nvs_error(err));
     return false;
   }
   return true;
@@ -98,12 +98,12 @@ bool Preferences::remove(const char *key) {
   }
   esp_err_t err = nvs_erase_key(_handle, key);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_erase_key fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_erase_key fail: %s %s", key, nvs_error(err));
     return false;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return false;
   }
   return true;
@@ -119,12 +119,12 @@ size_t Preferences::putChar(const char *key, int8_t value) {
   }
   esp_err_t err = nvs_set_i8(_handle, key, value);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_set_i8 fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_set_i8 fail: %s %s", key, nvs_error(err));
     return 0;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return 1;
@@ -136,12 +136,12 @@ size_t Preferences::putUChar(const char *key, uint8_t value) {
   }
   esp_err_t err = nvs_set_u8(_handle, key, value);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_set_u8 fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_set_u8 fail: %s %s", key, nvs_error(err));
     return 0;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return 1;
@@ -153,12 +153,12 @@ size_t Preferences::putShort(const char *key, int16_t value) {
   }
   esp_err_t err = nvs_set_i16(_handle, key, value);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_set_i16 fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_set_i16 fail: %s %s", key, nvs_error(err));
     return 0;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return 2;
@@ -170,12 +170,12 @@ size_t Preferences::putUShort(const char *key, uint16_t value) {
   }
   esp_err_t err = nvs_set_u16(_handle, key, value);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_set_u16 fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_set_u16 fail: %s %s", key, nvs_error(err));
     return 0;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return 2;
@@ -187,12 +187,12 @@ size_t Preferences::putInt(const char *key, int32_t value) {
   }
   esp_err_t err = nvs_set_i32(_handle, key, value);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_set_i32 fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_set_i32 fail: %s %s", key, nvs_error(err));
     return 0;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return 4;
@@ -204,12 +204,12 @@ size_t Preferences::putUInt(const char *key, uint32_t value) {
   }
   esp_err_t err = nvs_set_u32(_handle, key, value);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_set_u32 fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_set_u32 fail: %s %s", key, nvs_error(err));
     return 0;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return 4;
@@ -229,12 +229,12 @@ size_t Preferences::putLong64(const char *key, int64_t value) {
   }
   esp_err_t err = nvs_set_i64(_handle, key, value);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_set_i64 fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_set_i64 fail: %s %s", key, nvs_error(err));
     return 0;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return 8;
@@ -246,12 +246,12 @@ size_t Preferences::putULong64(const char *key, uint64_t value) {
   }
   esp_err_t err = nvs_set_u64(_handle, key, value);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_set_u64 fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_set_u64 fail: %s %s", key, nvs_error(err));
     return 0;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return 8;
@@ -275,12 +275,12 @@ size_t Preferences::putString(const char *key, const char *value) {
   }
   esp_err_t err = nvs_set_str(_handle, key, value);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_set_str fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_set_str fail: %s %s", key, nvs_error(err));
     return 0;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return strlen(value);
@@ -296,12 +296,12 @@ size_t Preferences::putBytes(const char *key, const void *value, size_t len) {
   }
   esp_err_t err = nvs_set_blob(_handle, key, value, len);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_set_blob fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_set_blob fail: %s %s", key, nvs_error(err));
     return 0;
   }
   err = nvs_commit(_handle);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_commit fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_commit fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return len;
@@ -368,7 +368,7 @@ int8_t Preferences::getChar(const char *key, const int8_t defaultValue) {
   }
   esp_err_t err = nvs_get_i8(_handle, key, &value);
   if (err) {
-    ESP_LOGV("Nuki", "nvs_get_i8 fail: %s %s", key, nvs_error(err));
+    ESP_LOGV("NukiBle.Preferences", "nvs_get_i8 fail: %s %s", key, nvs_error(err));
   }
   return value;
 }
@@ -380,7 +380,7 @@ uint8_t Preferences::getUChar(const char *key, const uint8_t defaultValue) {
   }
   esp_err_t err = nvs_get_u8(_handle, key, &value);
   if (err) {
-    ESP_LOGV("Nuki", "nvs_get_u8 fail: %s %s", key, nvs_error(err));
+    ESP_LOGV("NukiBle.Preferences", "nvs_get_u8 fail: %s %s", key, nvs_error(err));
   }
   return value;
 }
@@ -392,7 +392,7 @@ int16_t Preferences::getShort(const char *key, const int16_t defaultValue) {
   }
   esp_err_t err = nvs_get_i16(_handle, key, &value);
   if (err) {
-    ESP_LOGV("Nuki", "nvs_get_i16 fail: %s %s", key, nvs_error(err));
+    ESP_LOGV("NukiBle.Preferences", "nvs_get_i16 fail: %s %s", key, nvs_error(err));
   }
   return value;
 }
@@ -404,7 +404,7 @@ uint16_t Preferences::getUShort(const char *key, const uint16_t defaultValue) {
   }
   esp_err_t err = nvs_get_u16(_handle, key, &value);
   if (err) {
-    ESP_LOGV("Nuki", "nvs_get_u16 fail: %s %s", key, nvs_error(err));
+    ESP_LOGV("NukiBle.Preferences", "nvs_get_u16 fail: %s %s", key, nvs_error(err));
   }
   return value;
 }
@@ -416,7 +416,7 @@ int32_t Preferences::getInt(const char *key, const int32_t defaultValue) {
   }
   esp_err_t err = nvs_get_i32(_handle, key, &value);
   if (err) {
-    ESP_LOGV("Nuki", "nvs_get_i32 fail: %s %s", key, nvs_error(err));
+    ESP_LOGV("NukiBle.Preferences", "nvs_get_i32 fail: %s %s", key, nvs_error(err));
   }
   return value;
 }
@@ -428,7 +428,7 @@ uint32_t Preferences::getUInt(const char *key, const uint32_t defaultValue) {
   }
   esp_err_t err = nvs_get_u32(_handle, key, &value);
   if (err) {
-    ESP_LOGV("Nuki", "nvs_get_u32 fail: %s %s", key, nvs_error(err));
+    ESP_LOGV("NukiBle.Preferences", "nvs_get_u32 fail: %s %s", key, nvs_error(err));
   }
   return value;
 }
@@ -448,7 +448,7 @@ int64_t Preferences::getLong64(const char *key, const int64_t defaultValue) {
   }
   esp_err_t err = nvs_get_i64(_handle, key, &value);
   if (err) {
-    ESP_LOGV("Nuki", "nvs_get_i64 fail: %s %s", key, nvs_error(err));
+    ESP_LOGV("NukiBle.Preferences", "nvs_get_i64 fail: %s %s", key, nvs_error(err));
   }
   return value;
 }
@@ -460,7 +460,7 @@ uint64_t Preferences::getULong64(const char *key, const uint64_t defaultValue) {
   }
   esp_err_t err = nvs_get_u64(_handle, key, &value);
   if (err) {
-    ESP_LOGV("Nuki", "nvs_get_u64 fail: %s %s", key, nvs_error(err));
+    ESP_LOGV("NukiBle.Preferences", "nvs_get_u64 fail: %s %s", key, nvs_error(err));
   }
   return value;
 }
@@ -488,16 +488,16 @@ size_t Preferences::getString(const char *key, char *value, const size_t maxLen)
   }
   esp_err_t err = nvs_get_str(_handle, key, NULL, &len);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_get_str len fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_get_str len fail: %s %s", key, nvs_error(err));
     return 0;
   }
   if (len > maxLen) {
-    ESP_LOGE("Nuki", "not enough space in value: %u < %u", maxLen, len);
+    ESP_LOGE("NukiBle.Preferences", "not enough space in value: %u < %u", maxLen, len);
     return 0;
   }
   err = nvs_get_str(_handle, key, value, &len);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_get_str fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_get_str fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return len;
@@ -511,14 +511,14 @@ std::string Preferences::getString(const char *key, const std::string defaultVal
   }
   esp_err_t err = nvs_get_str(_handle, key, value, &len);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_get_str len fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_get_str len fail: %s %s", key, nvs_error(err));
     return std::string(defaultValue);
   }
   char buf[len];
   value = buf;
   err = nvs_get_str(_handle, key, value, &len);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_get_str fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_get_str fail: %s %s", key, nvs_error(err));
     return std::string(defaultValue);
   }
   return std::string(buf);
@@ -531,7 +531,7 @@ size_t Preferences::getBytesLength(const char *key) {
   }
   esp_err_t err = nvs_get_blob(_handle, key, NULL, &len);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_get_blob len fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_get_blob len fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return len;
@@ -543,12 +543,12 @@ size_t Preferences::getBytes(const char *key, void *buf, size_t maxLen) {
     return len;
   }
   if (len > maxLen) {
-    ESP_LOGE("Nuki", "not enough space in buffer: %u < %u", maxLen, len);
+    ESP_LOGE("NukiBle.Preferences", "not enough space in buffer: %u < %u", maxLen, len);
     return 0;
   }
   esp_err_t err = nvs_get_blob(_handle, key, buf, &len);
   if (err) {
-    ESP_LOGE("Nuki", "nvs_get_blob fail: %s %s", key, nvs_error(err));
+    ESP_LOGE("NukiBle.Preferences", "nvs_get_blob fail: %s %s", key, nvs_error(err));
     return 0;
   }
   return len;
@@ -558,7 +558,7 @@ size_t Preferences::freeEntries() {
   nvs_stats_t nvs_stats;
   esp_err_t err = nvs_get_stats(NULL, &nvs_stats);
   if (err) {
-    ESP_LOGE("Nuki", "Failed to get nvs statistics");
+    ESP_LOGE("NukiBle.Preferences", "Failed to get nvs statistics");
     return 0;
   }
   return nvs_stats.free_entries;

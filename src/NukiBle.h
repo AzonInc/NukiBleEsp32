@@ -379,6 +379,10 @@ namespace Nuki {
       bool connectBle(const BLEAddress bleAddress, bool pairing);
       void extendDisconnectTimeout();
 
+      void logMessageVar(const char* message, unsigned int var, int level = 4);
+      void logMessageVar(const char* message, const char* var, int level = 4);
+      void logMessage(const char* message, int level = 4);
+
       template <typename TDeviceAction>
       Nuki::CmdResult executeAction(const TDeviceAction action);
 

@@ -140,7 +140,7 @@ namespace NukiOpener {
       }
       return result;
     } else {
-      ESP_LOGW("Nuki", "setName, too long (max32)");
+      ESP_LOGW("NukiBle.NukiOpener", "setName, too long (max32)");
       return Nuki::CmdResult::Failed;
     }
   }
@@ -486,7 +486,7 @@ namespace NukiOpener {
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
       if (debugNukiReadableData) {      
-        ESP_LOGD("Nuki", "addTimeControlEntry, payloadlen: %d", sizeof(NewTimeControlEntry));
+        ESP_LOGD("NukiBle.NukiOpener", "addTimeControlEntry, payloadlen: %d", sizeof(NewTimeControlEntry));
         printBuffer(action.payload, sizeof(NewTimeControlEntry), false, "new time control content: ", debugNukiHexData);
         logNewTimeControlEntry(newTimeControlEntry, true);
       }
@@ -508,7 +508,7 @@ namespace NukiOpener {
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
       if (debugNukiReadableData) {
-        ESP_LOGD("Nuki", "addTimeControlEntry, payloadlen: %d", sizeof(TimeControlEntry));
+        ESP_LOGD("NukiBle.NukiOpener", "addTimeControlEntry, payloadlen: %d", sizeof(TimeControlEntry));
         printBuffer(action.payload, sizeof(TimeControlEntry), false, "updated time control content: ", debugNukiHexData);
         logTimeControlEntry(TimeControlEntry, true);
       }
