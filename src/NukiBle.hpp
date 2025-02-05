@@ -34,7 +34,7 @@ namespace Nuki {
 
     if (takeNukiBleSemaphore("exec Action")) {
       if (debugNukiCommunication) {
-        logMessageVar("Start executing: %02x ", (unsigned int)action.command);
+        logMessageVar("Start executing", (unsigned int)action.command);
       }
 
       while (1) {
@@ -82,7 +82,7 @@ namespace Nuki {
     switch (nukiCommandState) {
       case CommandState::Idle: {
         if (debugNukiCommunication) {
-          logMessageVar("************************ SENDING COMMAND [%d] ************************", (unsigned int)action.command);
+          logMessageVar("************************ SENDING COMMAND ************************", (unsigned int)action.command);
         }
         lastMsgCodeReceived = Command::Empty;
 
@@ -198,7 +198,7 @@ namespace Nuki {
       }
       case CommandState::ChallengeRespReceived: {
         if (debugNukiCommunication) {
-          logMessageVar("************************ SENDING COMMAND [%d] ************************", (unsigned int)action.command);
+          logMessageVar("************************ SENDING COMMAND ************************", (unsigned int)action.command);
         }
         lastMsgCodeReceived = Command::Empty;
         crcCheckOke = false;
@@ -327,7 +327,7 @@ namespace Nuki {
       }
       case CommandState::ChallengeRespReceived: {
         if (debugNukiCommunication) {
-          logMessageVar("************************ SENDING COMMAND [%d] ************************", (unsigned int)action.command);
+          logMessageVar("************************ SENDING COMMAND ************************", (unsigned int)action.command);
         }
         lastMsgCodeReceived = Command::Empty;
         //add received challenge nonce to payload

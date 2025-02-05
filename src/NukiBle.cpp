@@ -1577,17 +1577,17 @@ namespace Nuki {
   void NukiBle::logMessage(const char* message, int level) {
     switch (level) {
       case 1:
-        ESP_LOGE("NukiBle", message);
+        ESP_LOGE("NukiBle", "%s", message);
         break;
       case 2:
-        ESP_LOGW("NukiBle", message);
+        ESP_LOGW("NukiBle", "%s", message);
         break;
       case 3:
-        ESP_LOGI("NukiBle", message);
+        ESP_LOGI("NukiBle", "%s", message);
         break;
       case 4:
       default:
-        ESP_LOGD("NukiBle", message);
+        ESP_LOGD("NukiBle", "%s", message);
         break;
     }
   }
@@ -1595,17 +1595,17 @@ namespace Nuki {
   void NukiBle::logMessageVar(const char* message, unsigned int var, int level) {
     switch (level) {
       case 1:
-        ESP_LOGE("NukiBle", message, var);
+        ESP_LOGE("NukiBle", "%s - Details: %u", message, var);
         break;
       case 2:
-        ESP_LOGW("NukiBle", message, var);
+        ESP_LOGW("NukiBle", "%s - Details: %u", message, var);
         break;
       case 3:
-        ESP_LOGI("NukiBle", message, var);
+        ESP_LOGI("NukiBle", "%s - Details: %u", message, var);
         break;
       case 4:
       default:
-        ESP_LOGD("NukiBle", message, var);
+        ESP_LOGD("NukiBle", "%s - Details: %u", message, var);
         break;
     }
   }
@@ -1613,17 +1613,17 @@ namespace Nuki {
   void NukiBle::logMessageVar(const char* message, const char* var, int level) {
     switch (level) {
       case 1:
-        ESP_LOGE("NukiBle", message, var);
+        ESP_LOGE("NukiBle", "%s - Details: %s", message, var);
         break;
       case 2:
-        ESP_LOGW("NukiBle", message, var);
+        ESP_LOGW("NukiBle", "%s - Details: %s", message, var);
         break;
       case 3:
-        ESP_LOGI("NukiBle", message, var);
+        ESP_LOGI("NukiBle", "%s - Details: %s", message, var);
         break;
       case 4:
       default:
-        ESP_LOGD("NukiBle", message, var);
+        ESP_LOGD("NukiBle", "%s - Details: %s", message, var);
         break;
     }
   }
