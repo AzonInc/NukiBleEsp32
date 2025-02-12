@@ -11,11 +11,11 @@
 
 
 namespace NukiLock {
-
   NukiLock::NukiLock(const std::string& deviceName, const uint32_t deviceId)
     : NukiBle(deviceName,
               deviceId,
               keyturnerPairingServiceUUID,
+              keyturnerPairingServiceUltraUUID,
               keyturnerServiceUUID,
               keyturnerGdioUUID,
               keyturnerUserDataUUID,
@@ -74,7 +74,7 @@ namespace NukiLock {
 
     Nuki::CmdResult result = executeAction(action);
     if (result == Nuki::CmdResult::Success) {
-      // printBuffer((uint8_t*)&retrievedKeyTurnerState, sizeof(retrievedKeyTurnerState), false, "retreived Keyturner state", debugNukiHexData);
+      // printBuffer((uint8_t*)&retrievedKeyTurnerState, sizeof(retrievedKeyTurnerState), false, "retrieved Keyturner state", debugNukiHexData);
       memcpy(retrievedKeyTurnerState, &keyTurnerState, sizeof(KeyTurnerState));
     }
     return result;
@@ -461,6 +461,26 @@ namespace NukiLock {
     return result;
   }
 
+  Nuki::CmdResult NukiLock::setMotorSpeed(const MotorSpeed speed) {
+    AdvancedConfig oldConfig;
+    Nuki::CmdResult result = requestAdvancedConfig(&oldConfig);
+    if (result == Nuki::CmdResult::Success) {
+      oldConfig.motorSpeed = speed;
+      result = setFromAdvancedConfig(oldConfig);
+    }
+    return result;
+  }
+
+  Nuki::CmdResult NukiLock::enableSlowSpeedDuringNightMode(const bool enable) {
+    AdvancedConfig oldConfig;
+    Nuki::CmdResult result = requestAdvancedConfig(&oldConfig);
+    if (result == Nuki::CmdResult::Success) {
+      oldConfig.enableSlowSpeedDuringNightMode = enable;
+      result = setFromAdvancedConfig(oldConfig);
+    }
+    return result;
+  }
+
   Nuki::CmdResult NukiLock::enablePairing(const bool enable) {
     Config oldConfig;
     Nuki::CmdResult result = requestConfig(&oldConfig);
@@ -694,14 +714,20 @@ namespace NukiLock {
 
   Nuki::CmdResult NukiLock::setAdvancedConfig(NewAdvancedConfig newAdvancedConfig) {
     Action action{};
-    unsigned char payload[sizeof(NewAdvancedConfig)] = {0};
-    memcpy(payload, &newAdvancedConfig, sizeof(NewAdvancedConfig));
-
     action.cmdType = Nuki::CommandType::CommandWithChallengeAndPin;
     action.command = Command::SetAdvancedConfig;
-    memcpy(action.payload, &payload, sizeof(payload));
-    action.payloadLen = sizeof(payload);
 
+    if (isLockUltra()) {
+      unsigned char payload[sizeof(NewAdvancedConfig)] = {0};
+      memcpy(payload, &newAdvancedConfig, sizeof(NewAdvancedConfig));
+      memcpy(action.payload, &payload, sizeof(payload));
+      action.payloadLen = sizeof(payload);      
+    } else {
+      unsigned char payload[sizeof(NewAdvancedConfig) - 2] = {0};
+      memcpy(payload, &newAdvancedConfig, sizeof(NewAdvancedConfig) - 2);
+      memcpy(action.payload, &payload, sizeof(payload));
+      action.payloadLen = sizeof(payload);
+    }
     return executeAction(action);
   }
 
@@ -748,6 +774,8 @@ namespace NukiLock {
     newConfig->autoLockEnabled = oldConfig->autoLockEnabled;
     newConfig->immediateAutoLockEnabled = oldConfig->immediateAutoLockEnabled;
     newConfig->autoUpdateEnabled = oldConfig->autoUpdateEnabled;
+    newConfig->motorSpeed = oldConfig->motorSpeed;
+    newConfig->enableSlowSpeedDuringNightMode = oldConfig->enableSlowSpeedDuringNightMode;
   }
 
   void NukiLock::handleReturnMessage(Command returnCode, unsigned char* data, uint16_t dataLen) {

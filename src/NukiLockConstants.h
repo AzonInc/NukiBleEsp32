@@ -27,6 +27,8 @@ namespace NukiLock {
 
   //Keyturner Pairing Service
   const NimBLEUUID keyturnerPairingServiceUUID  = NimBLEUUID("a92ee100-5501-11e4-916c-0800200c9a66");
+  //Keyturner Pairing Service SmartLock Ultra
+  const NimBLEUUID keyturnerPairingServiceUltraUUID  = NimBLEUUID("a92ee300-5501-11e4-916c-0800200c9a66");
   //Keyturner Service
   const NimBLEUUID keyturnerServiceUUID  = NimBLEUUID("a92ee200-5501-11e4-916c-0800200c9a66");
   //Keyturner pairing Data Input Output characteristic
@@ -154,6 +156,13 @@ namespace NukiLock {
     Unknown           = 0xFF
   };
 
+  enum class MotorSpeed : uint8_t {
+    Standard          = 0x00,
+    Insane            = 0x01,
+    Gentle            = 0x02,
+    Unknown           = 0xFF
+  };
+
   enum class CompletionStatus : uint8_t {
     Success           = 0x00,
     MotorBlocked      = 0x01,
@@ -191,8 +200,8 @@ namespace NukiLock {
     uint8_t nightModeActive = 255;
     uint8_t accessoryBatteryState = 255;
     uint8_t network = 255;
-    uint8_t bleConnectionStrength = 255;
-    uint8_t wifiConnectionStrength = 255;
+    int8_t bleConnectionStrength = 127;
+    int8_t wifiConnectionStrength = 127;
     uint8_t wifi = 255;
     uint8_t mqtt = 255;
     uint8_t thread = 255;
@@ -266,19 +275,19 @@ namespace NukiLock {
     BatteryType batteryType = BatteryType::Unknown;
     uint8_t automaticBatteryTypeDetection = 255;
     uint8_t unlatchDuration = 255;
-    uint16_t autoLockTimeOut = -1;
+    uint16_t autoLockTimeOut = 65535;
     uint8_t autoUnLockDisabled = 255;
     uint8_t nightModeEnabled = 255;
     unsigned char nightModeStartTime[2] = {0, 0};
     unsigned char nightModeEndTime[2] = {0, 0};
     uint8_t nightModeAutoLockEnabled = 255;
     uint8_t nightModeAutoUnlockDisabled = 255;
-    uint8_t  nightModeImmediateLockOnStart = 255;
+    uint8_t nightModeImmediateLockOnStart = 255;
     uint8_t autoLockEnabled = 255;
     uint8_t immediateAutoLockEnabled = 255;
     uint8_t autoUpdateEnabled = 255;
-    uint8_t speedMode = 255;
-    uint8_t slowSpeedDuringNightMode = 255;
+    MotorSpeed motorSpeed = MotorSpeed::Unknown;
+    uint8_t enableSlowSpeedDuringNightMode = 255;
   };
 
   struct __attribute__((packed)) NewAdvancedConfig {
@@ -304,6 +313,8 @@ namespace NukiLock {
     uint8_t autoLockEnabled;
     uint8_t immediateAutoLockEnabled;
     uint8_t autoUpdateEnabled;
+    MotorSpeed motorSpeed;
+    uint8_t enableSlowSpeedDuringNightMode;
   };
 
   struct __attribute__((packed)) BatteryReport {

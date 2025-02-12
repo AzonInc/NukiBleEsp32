@@ -41,6 +41,7 @@ namespace Nuki {
   NukiBle::NukiBle(const std::string& deviceName,
                   const uint32_t deviceId,
                   const NimBLEUUID pairingServiceUUID,
+                  const NimBLEUUID pairingServiceUltraUUID,
                   const NimBLEUUID deviceServiceUUID,
                   const NimBLEUUID gdioUUID,
                   const NimBLEUUID userDataUUID,
@@ -48,6 +49,7 @@ namespace Nuki {
     : deviceName(deviceName),
       deviceId(deviceId),
       pairingServiceUUID(pairingServiceUUID),
+      pairingServiceUltraUUID(pairingServiceUltraUUID),
       deviceServiceUUID(deviceServiceUUID),
       gdioUUID(gdioUUID),
       userDataUUID(userDataUUID),
@@ -543,7 +545,27 @@ namespace Nuki {
           }
           bleAddress = advertisedDevice->getAddress();
           pairingServiceAvailable = true;
+          smartLockUltra = false;
           pairingLastSeen = (esp_timer_get_time() / 1000);
+        } else if (advertisedDevice->getServiceData(pairingServiceUltraUUID) != "") {
+          if (debugNukiConnect) {
+            ESP_LOGD("NukiBle", "Found nuki ultra in pairing state: %s addr: %s", std::string(advertisedDevice->getName()).c_str(), std::string(advertisedDevice->getAddress()).c_str());
+          }
+
+          if (pairingPinCode == 123456) {
+            ESP_LOGD("NukiBle", "No pairing PIN code set, not pairing with Nuki SmartLock Ultra");
+          } else {
+            bleAddress = advertisedDevice->getAddress();
+            pairingServiceAvailable = true;
+            smartLockUltra = true;
+            if (NimBLEDevice::isBonded(bleAddress)) {
+              NimBLEDevice::deleteBond(bleAddress);
+            }
+            NimBLEDevice::setSecurityIOCap(BLE_HS_IO_KEYBOARD_ONLY);
+            NimBLEDevice::setSecurityAuth(true, false, true);
+            NimBLEDevice::setSecurityPasskey(pairingPinCode);
+            pairingLastSeen = (esp_timer_get_time() / 1000);
+          }
         }
       }
     }
@@ -768,6 +790,24 @@ namespace Nuki {
     return result;
   }
 
+  Nuki::CmdResult NukiBle::setUltraPin(const uint32_t newSecurityPin) {
+    NukiLock::Action action;
+    unsigned char payload[4] = {0};
+    memcpy(payload, &newSecurityPin, 4);
+
+    action.cmdType = Nuki::CommandType::CommandWithChallengeAndPin;
+    action.command = Command::SetSecurityPin;
+    memcpy(action.payload, &payload, sizeof(payload));
+    action.payloadLen = sizeof(payload);
+
+    Nuki::CmdResult result = executeAction(action);
+    if (result == Nuki::CmdResult::Success) {
+      ultraPinCode = newSecurityPin;
+      saveCredentials();
+    }
+    return result;
+  }
+
   Nuki::CmdResult NukiBle::verifySecurityPin() {
     NukiLock::Action action;
 
@@ -843,6 +883,17 @@ namespace Nuki {
     return false;
   }
 
+  bool NukiBle::saveUltraPincode(const uint32_t pinCode, bool save) {
+    if (sizeof(pinCode) == 4) {
+      if (save) {
+        preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &pinCode, 4);
+      }
+      this->ultraPinCode = pinCode;
+      return true;
+    }
+    return false;
+  }
+
   void NukiBle::saveCredentials() {
     unsigned char currentBleAddress[6];
     unsigned char storedBleAddress[6];
@@ -872,18 +923,34 @@ namespace Nuki {
         printBuffer(secretKeyK, sizeof(secretKeyK), false, SECRET_KEY_STORE_NAME, debugNukiHexData);
         printBuffer(currentBleAddress, 6, false, BLE_ADDRESS_STORE_NAME, debugNukiHexData);
         printBuffer(authorizationId, sizeof(authorizationId), false, AUTH_ID_STORE_NAME, debugNukiHexData);
-        ESP_LOGD("NukiBle", "pincode: %d", pinCode);
+
+        if (isLockUltra()) {
+          ESP_LOGD("NukiBle", "pincode: %d", ultraPinCode);
+        } else {
+          ESP_LOGD("NukiBle", "pincode: %d", pinCode);
+        }
       }
     } else {
-      ESP_LOGE("NukiBle", "ERROR saving credentials");
+      logMessage("ERROR saving credentials", 1);
     }
   }
 
   uint16_t NukiBle::getSecurityPincode() {
-
     if (takeNukiBleSemaphore("retr pincode cred")) {
       uint16_t storedPincode = 0000;
       if ((preferences.getBytes(SECURITY_PINCODE_STORE_NAME, &storedPincode, 2) > 0)) {
+        giveNukiBleSemaphore();
+        return storedPincode;
+      }
+      giveNukiBleSemaphore();
+    }
+    return 0;
+  }
+
+  uint32_t NukiBle::getUltraPincode() {
+    if (takeNukiBleSemaphore("retr pincode cred")) {
+      uint32_t storedPincode = 000000;
+      if ((preferences.getBytes(ULTRA_PINCODE_STORE_NAME, &storedPincode, 4) > 0)) {
         giveNukiBleSemaphore();
         return storedPincode;
       }
@@ -910,7 +977,6 @@ namespace Nuki {
 
     if (takeNukiBleSemaphore("retr cred")) {
       if ((preferences.getBytes(BLE_ADDRESS_STORE_NAME, buff, 6) > 0)
-          && (preferences.getBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2) > 0)
           && (preferences.getBytes(SECRET_KEY_STORE_NAME, secretKeyK, 32) > 0)
           && (preferences.getBytes(AUTH_ID_STORE_NAME, authorizationId, 4) > 0)
         ) {
@@ -929,10 +995,21 @@ namespace Nuki {
           return false;
         }
 
-        if (pinCode == 0) {
-          ESP_LOGW("NukiBle", "Pincode is 000000, probably not defined");
-        }
+        smartLockUltra = preferences.getBool(ULTRA_STORE_NAME, false);
 
+        if (isLockUltra()) {
+          preferences.getBytes(ULTRA_PINCODE_STORE_NAME, &ultraPinCode, 4);
+
+          if (ultraPinCode == 0) {
+            ESP_LOGW("NukiBle", "Pincode is 000000, probably not defined");
+          }
+        } else {
+          preferences.getBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2);
+
+          if (pinCode == 0) {
+            ESP_LOGW("NukiBle", "Pincode is 000000, probably not defined");
+          }
+        }
       } else {
         ESP_LOGE("NukiBle", "Error getting data from NVS");
         giveNukiBleSemaphore();
@@ -940,7 +1017,6 @@ namespace Nuki {
       }
       giveNukiBleSemaphore();
     }
-
     return true;
   }
 
@@ -950,6 +1026,7 @@ namespace Nuki {
       unsigned char emptyAuthorizationId[4] = {0x00};
       preferences.putBytes(SECRET_KEY_STORE_NAME, emptySecretKeyK, 32);
       preferences.putBytes(AUTH_ID_STORE_NAME, emptyAuthorizationId, 4);
+      preferences.putBool(ULTRA_STORE_NAME, false);
       // preferences.remove(SECRET_KEY_STORE_NAME);
       // preferences.remove(AUTH_ID_STORE_NAME);
       giveNukiBleSemaphore();
@@ -1036,41 +1113,64 @@ namespace Nuki {
         nukiPairingResultState = PairingState::SendAuthData;
       }
       case PairingState::SendAuthData: {
-        if (isCharArrayNotEmpty(challengeNonceK, sizeof(challengeNonceK))) {
+        if (isLockUltra()) {
           if (debugNukiConnect) {
-            ESP_LOGD("NukiBle", "##################### SEND AUTHORIZATION DATA #########################");
+            ESP_LOGD("NukiBle", "##################### SEND AUTHORIZATION DATA (ULTRA) #########################");
           }
-          unsigned char authorizationData[101] = {};
-          unsigned char authorizationDataIdType[1] = {(unsigned char)authorizationIdType };
+            
           unsigned char authorizationDataId[4] = {};
           unsigned char authorizationDataName[32] = {};
-          unsigned char authorizationDataNonce[32] = {};
           authorizationDataId[0] = (deviceId >> (8 * 0)) & 0xff;
           authorizationDataId[1] = (deviceId >> (8 * 1)) & 0xff;
           authorizationDataId[2] = (deviceId >> (8 * 2)) & 0xff;
           authorizationDataId[3] = (deviceId >> (8 * 3)) & 0xff;
           memcpy(authorizationDataName, deviceName.c_str(), deviceName.size());
-          generateNonce(authorizationDataNonce, sizeof(authorizationDataNonce), debugNukiHexData);
-
-          //calculate authenticator of message to send
-          memcpy(&authorizationData[0], authorizationDataIdType, sizeof(authorizationDataIdType));
-          memcpy(&authorizationData[1], authorizationDataId, sizeof(authorizationDataId));
-          memcpy(&authorizationData[5], authorizationDataName, sizeof(authorizationDataName));
-          memcpy(&authorizationData[37], authorizationDataNonce, sizeof(authorizationDataNonce));
-          memcpy(&authorizationData[69], challengeNonceK, sizeof(challengeNonceK));
-          crypto_auth_hmacsha256(authenticator, authorizationData, sizeof(authorizationData), secretKeyK);
 
           //compose and send message
-          unsigned char authorizationDataMessage[101];
-          memcpy(&authorizationDataMessage[0], authenticator, sizeof(authenticator));
-          memcpy(&authorizationDataMessage[32], authorizationDataIdType, sizeof(authorizationDataIdType));
-          memcpy(&authorizationDataMessage[33], authorizationDataId, sizeof(authorizationDataId));
-          memcpy(&authorizationDataMessage[37], authorizationDataName, sizeof(authorizationDataName));
-          memcpy(&authorizationDataMessage[69], authorizationDataNonce, sizeof(authorizationDataNonce));
+          unsigned char authorizationDataMessage[40];
+          memcpy(&authorizationDataMessage[0], authorizationDataId, sizeof(authorizationDataId));
+          memcpy(&authorizationDataMessage[4], authorizationDataName, sizeof(authorizationDataName));
+          memcpy(&authorizationDataMessage[36], &ultraPinCode, 4);
 
-          memset(challengeNonceK, 0, sizeof(challengeNonceK));
-          sendPlainMessage(Command::AuthorizationData, authorizationDataMessage, sizeof(authorizationDataMessage));
-          nukiPairingResultState = PairingState::SendAuthIdConf;
+          sendEncryptedMessage(Command::AuthorizationData, authorizationDataMessage, sizeof(authorizationDataMessage));
+          nukiPairingResultState = PairingState::RecStatus;
+        } else {
+          if (isCharArrayNotEmpty(challengeNonceK, sizeof(challengeNonceK))) {
+            if (debugNukiConnect) {
+              ESP_LOGD("NukiBle", "##################### SEND AUTHORIZATION DATA #########################");
+            }
+            unsigned char authorizationData[101] = {};
+            unsigned char authorizationDataIdType[1] = {(unsigned char)authorizationIdType };
+            unsigned char authorizationDataId[4] = {};
+            unsigned char authorizationDataName[32] = {};
+            unsigned char authorizationDataNonce[32] = {};
+            authorizationDataId[0] = (deviceId >> (8 * 0)) & 0xff;
+            authorizationDataId[1] = (deviceId >> (8 * 1)) & 0xff;
+            authorizationDataId[2] = (deviceId >> (8 * 2)) & 0xff;
+            authorizationDataId[3] = (deviceId >> (8 * 3)) & 0xff;
+            memcpy(authorizationDataName, deviceName.c_str(), deviceName.size());
+            generateNonce(authorizationDataNonce, sizeof(authorizationDataNonce), debugNukiHexData);
+
+            //calculate authenticator of message to send
+            memcpy(&authorizationData[0], authorizationDataIdType, sizeof(authorizationDataIdType));
+            memcpy(&authorizationData[1], authorizationDataId, sizeof(authorizationDataId));
+            memcpy(&authorizationData[5], authorizationDataName, sizeof(authorizationDataName));
+            memcpy(&authorizationData[37], authorizationDataNonce, sizeof(authorizationDataNonce));
+            memcpy(&authorizationData[69], challengeNonceK, sizeof(challengeNonceK));
+            crypto_auth_hmacsha256(authenticator, authorizationData, sizeof(authorizationData), secretKeyK);
+
+            //compose and send message
+            unsigned char authorizationDataMessage[101];
+            memcpy(&authorizationDataMessage[0], authenticator, sizeof(authenticator));
+            memcpy(&authorizationDataMessage[32], authorizationDataIdType, sizeof(authorizationDataIdType));
+            memcpy(&authorizationDataMessage[33], authorizationDataId, sizeof(authorizationDataId));
+            memcpy(&authorizationDataMessage[37], authorizationDataName, sizeof(authorizationDataName));
+            memcpy(&authorizationDataMessage[69], authorizationDataNonce, sizeof(authorizationDataNonce));
+
+            memset(challengeNonceK, 0, sizeof(challengeNonceK));
+            sendPlainMessage(Command::AuthorizationData, authorizationDataMessage, sizeof(authorizationDataMessage));
+            nukiPairingResultState = PairingState::SendAuthIdConf;
+          }
         }
         break;
       }
@@ -1378,9 +1478,15 @@ namespace Nuki {
       case Command::AuthorizationId : {
         unsigned char lockId[16];
         printBuffer((uint8_t*)data, dataLen, false, "authorizationId data", debugNukiHexData);
-        memcpy(authorizationId, &data[32], 4);
-        memcpy(lockId, &data[36], sizeof(lockId));
-        memcpy(challengeNonceK, &data[52], sizeof(challengeNonceK));
+        if (isLockUltra()) {
+          memcpy(authorizationId, &data, 4);
+          memcpy(lockId, &data[4], sizeof(lockId));
+          receivedStatus = 0;
+        } else {
+          memcpy(authorizationId, &data[32], 4);
+          memcpy(lockId, &data[36], sizeof(lockId));
+          memcpy(challengeNonceK, &data[52], sizeof(challengeNonceK));
+        }
         printBuffer(authorizationId, sizeof(authorizationId), false, AUTH_ID_STORE_NAME);
         printBuffer(lockId, sizeof(lockId), false, "lockId");
         break;
@@ -1431,6 +1537,10 @@ namespace Nuki {
       }
       case Command::AuthorizationIdInvite : {
         printBuffer((uint8_t*)data, dataLen, false, "authorizationIdInvite", debugNukiHexData);
+        break;
+      }
+      case Command::AuthorizationInfo : {
+        printBuffer((uint8_t*)data, dataLen, false, "authorizationInfo", debugNukiHexData);
         break;
       }
       case Command::AuthorizationEntryCount : {
@@ -1499,6 +1609,7 @@ namespace Nuki {
 
   void NukiBle::onDisconnect(BLEClient*, int reason)
   {
+    countDisconnects = 0;
     if (debugNukiConnect) {
       ESP_LOGD("NukiBle", "BLE disconnected");
     }
@@ -1511,6 +1622,10 @@ namespace Nuki {
 
   const bool NukiBle::isPairedWithLock() const {
     return isPaired;
+  };
+
+  const bool NukiBle::isLockUltra() const {
+    return smartLockUltra;
   };
 
   bool NukiBle::takeNukiBleSemaphore(std::string taker) {

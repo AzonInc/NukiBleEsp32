@@ -59,12 +59,12 @@ typedef enum {
 #endif
 
 namespace Nuki {
-  
   class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
     public:
       NukiBle(const std::string& deviceName,
               const uint32_t deviceId,
               const NimBLEUUID pairingServiceUUID,
+              const NimBLEUUID pairingServiceUltraUUID,
               const NimBLEUUID deviceServiceUUID,
               const NimBLEUUID gdioUUID,
               const NimBLEUUID userDataUUID,
@@ -133,6 +133,11 @@ namespace Nuki {
        * @brief Returns pairing state (if credentials are stored or not)
        */
       const bool isPairedWithLock() const;
+      
+      /**
+       * @brief Returns if BLE is pairing/paired/connected with a Smart Lock Ultra
+       */
+      const bool isLockUltra() const;
 
       /**
        * @brief Returns the log entry count. Only available after executing retreiveLogEntries.
@@ -249,6 +254,7 @@ namespace Nuki {
        * @return true if stored successfully
        */
       bool saveSecurityPincode(const uint16_t pinCode);
+      bool saveUltraPincode(const uint32_t pinCode, bool save = true);
 
       /**
        * @brief Gets the pincode stored on the esp. This pincode is used for sending/setting config via BLE to the lock
@@ -257,6 +263,7 @@ namespace Nuki {
        * @return pincode
        */
       uint16_t getSecurityPincode();
+      uint32_t getUltraPincode();
 
       /**
        * @brief Send the new pincode command to the lock via BLE
@@ -267,6 +274,7 @@ namespace Nuki {
        * @return Nuki::CmdResult
        */
       Nuki::CmdResult setSecurityPin(const uint16_t newSecurityPin);
+      Nuki::CmdResult setUltraPin(const uint32_t newSecurityPin);
 
       /**
        * @brief Send the verify pincode command via BLE to the lock.
@@ -375,10 +383,16 @@ namespace Nuki {
        */
       void setDebugCommand(bool enable);
 
+      /**
+       * @brief Registers a Logger to be used for printing debug logs
+       *
+       * @param Log the logger
+       */
+      void registerLogger(Print* Log);
+      
     protected:
       bool connectBle(const BLEAddress bleAddress, bool pairing);
       void extendDisconnectTimeout();
-
       void logMessageVar(const char* message, unsigned int var, int level = 4);
       void logMessageVar(const char* message, const char* var, int level = 4);
       void logMessage(const char* message, int level = 4);
@@ -425,6 +439,7 @@ namespace Nuki {
       bool connecting = false;
       bool statusUpdated = false;
       bool refreshServices = false;
+      bool smartLockUltra = false;
       uint16_t timeoutDuration = 1000;
       uint8_t connectTimeoutSec = 1;
       uint8_t connectRetries = 5;
@@ -458,6 +473,8 @@ namespace Nuki {
 
   //Keyturner Pairing Service
       const NimBLEUUID pairingServiceUUID;
+  //Keyturner Pairing Service Ultra
+      const NimBLEUUID pairingServiceUltraUUID;
   //Keyturner Service
       const NimBLEUUID deviceServiceUUID;
   //Keyturner pairing Data Input Output characteristic
@@ -488,6 +505,7 @@ namespace Nuki {
       unsigned char myPublicKey[32] = {0x00};
       unsigned char myPrivateKey[32] = {0x00};
       uint16_t pinCode = 0000;
+      uint32_t ultraPinCode = 000000;
       unsigned char secretKeyK[32] = {0x00};
 
       unsigned char sentNonce[crypto_secretbox_NONCEBYTES] = {};

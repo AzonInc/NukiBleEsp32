@@ -10,10 +10,10 @@
 #include "esp_log.h"
 
 namespace NukiOpener {
-
   NukiOpener::NukiOpener(const std::string& deviceName, const uint32_t deviceId)
     : NukiBle(deviceName,
               deviceId,
+              openerPairingServiceUUID,
               openerPairingServiceUUID,
               openerServiceUUID,
               openerGdioUUID,

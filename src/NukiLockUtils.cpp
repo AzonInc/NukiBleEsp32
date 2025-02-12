@@ -677,8 +677,8 @@ namespace NukiLock {
       ESP_LOGD("NukiBle.NukiLock", "autoLockEnabled :%d", (unsigned int)advancedConfig.autoLockEnabled);
       ESP_LOGD("NukiBle.NukiLock", "immediateAutoLockEnabled :%d", (unsigned int)advancedConfig.immediateAutoLockEnabled);
       ESP_LOGD("NukiBle.NukiLock", "autoUpdateEnabled :%d", (unsigned int)advancedConfig.autoUpdateEnabled);
-      ESP_LOGD("NukiBle.NukiLock", "speedMode :%d", (unsigned int)advancedConfig.speedMode);
-      ESP_LOGD("NukiBle.NukiLock", "slowSpeedDuringNightMode :%d", (unsigned int)advancedConfig.slowSpeedDuringNightMode);
+      ESP_LOGD("NukiBle.NukiLock", "motorSpeed :%d", (unsigned int)advancedConfig.motorSpeed);
+      ESP_LOGD("NukiBle.NukiLock", "enableSlowSpeedDuringNightMode :%d", (unsigned int)advancedConfig.enableSlowSpeedDuringNightMode);
     }
   }
 
