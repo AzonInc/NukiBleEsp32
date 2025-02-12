@@ -558,18 +558,12 @@ void NukiBle::onResult(const BLEAdvertisedDevice* advertisedDevice) {
           ESP_LOGD("NukiBle", "Found nuki ultra in pairing state: %s addr: %s", std::string(advertisedDevice->getName()).c_str(), std::string(advertisedDevice->getAddress()).c_str());
         }
 
-        if (pairingPinCode == 123456) {
+        if (ultraPinCode == 000000) {
           ESP_LOGD("NukiBle", "No pairing PIN code set, not pairing with Nuki SmartLock Ultra");
         } else {
           bleAddress = advertisedDevice->getAddress();
           pairingServiceAvailable = true;
           smartLockUltra = true;
-          if (NimBLEDevice::isBonded(bleAddress)) {
-            NimBLEDevice::deleteBond(bleAddress);
-          }
-          NimBLEDevice::setSecurityIOCap(BLE_HS_IO_KEYBOARD_ONLY);
-          NimBLEDevice::setSecurityAuth(true, false, true);
-          NimBLEDevice::setSecurityPasskey(pairingPinCode);
           pairingLastSeen = (esp_timer_get_time() / 1000);
         }
       }

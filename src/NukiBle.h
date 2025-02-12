@@ -383,13 +383,6 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
      * @param enable Set to true to enable command debug logging
      */
     void setDebugCommand(bool enable);
-
-    /**
-     * @brief Registers a Logger to be used for printing debug logs
-     *
-     * @param Log the logger
-     */
-    void registerLogger(Print* Log);
     
   protected:
     bool connectBle(const BLEAddress bleAddress, bool pairing);
