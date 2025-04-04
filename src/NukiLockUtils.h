@@ -42,5 +42,17 @@ void logBatteryReport(BatteryReport batteryReport, bool debug = false);
 void logLogEntry(LogEntry logEntry, bool debug = false);
 void logAdvancedConfig(AdvancedConfig advancedConfig, bool debug = false);
 void logNewAdvancedConfig(NewAdvancedConfig newAdvancedConfig, bool debug = false);
+void logMqttConfig(MqttConfig mqttConfig, bool debug = false);
+void logMqttConfigForMigration(MqttConfigForMigration mqttConfigForMigration, bool debug = false);
+void logWifiScanEntry(WifiScanEntry wifiScanEntry, bool debug = false);
+void logKeypad2Config(Keypad2Config keypad2Config, bool debug = false);
+void logDoorSensorConfig(DoorSensorConfig doorSensorConfig, bool debug = false);
+void logWifiConfig(WifiConfig wifiConfig, bool debug = false);
+void logWifiConfigForMigration(WifiConfigForMigration wifiConfigForMigration, bool debug = false);
+void logGeneralStatistics(GeneralStatistics generalStatistics, bool debug = false);
+void logDailyStatistics(DailyStatistics dailyStatistics, bool debug = false);
+void logFingerprintEntry(FingerprintEntry fingerprintEntry, bool debug = false);
+void logInternalLogEntry(InternalLogEntry internalLogEntry, bool debug = false);
+void logAccessoryInfo(AccessoryInfo accessoryInfo, bool debug = false);
 
 } // namespace Nuki

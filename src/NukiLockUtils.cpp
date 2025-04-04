@@ -164,61 +164,61 @@ void logLockErrorCode(uint8_t errorCode, bool debug) {
 
 void logConfig(Config config, bool debug) {
   if (debug) {
-    ESP_LOGD("NukiBle.NukiLock", "nukiId :%d", (unsigned int)config.nukiId);
-    ESP_LOGD("NukiBle.NukiLock", "name :%s", (const char*)config.name);
-    ESP_LOGD("NukiBle.NukiLock", "latitude :%f", (const float)config.latitude);
-    ESP_LOGD("NukiBle.NukiLock", "longitude :%f", (const float)config.longitude);
-    ESP_LOGD("NukiBle.NukiLock", "autoUnlatch :%d", (unsigned int)config.autoUnlatch);
-    ESP_LOGD("NukiBle.NukiLock", "pairingEnabled :%d", (unsigned int)config.pairingEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "buttonEnabled :%d", (unsigned int)config.buttonEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "ledEnabled :%d", (unsigned int)config.ledEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "ledBrightness :%d", (unsigned int)config.ledBrightness);
-    ESP_LOGD("NukiBle.NukiLock", "currentTime Year :%d", (unsigned int)config.currentTimeYear);
-    ESP_LOGD("NukiBle.NukiLock", "currentTime Month :%d", (unsigned int)config.currentTimeMonth);
-    ESP_LOGD("NukiBle.NukiLock", "currentTime Day :%d", (unsigned int)config.currentTimeDay);
-    ESP_LOGD("NukiBle.NukiLock", "currentTime Hour :%d", (unsigned int)config.currentTimeHour);
-    ESP_LOGD("NukiBle.NukiLock", "currentTime Minute :%d", (unsigned int)config.currentTimeMinute);
-    ESP_LOGD("NukiBle.NukiLock", "currentTime Second :%d", (unsigned int)config.currentTimeSecond);
-    ESP_LOGD("NukiBle.NukiLock", "timeZoneOffset :%d", (unsigned int)config.timeZoneOffset);
-    ESP_LOGD("NukiBle.NukiLock", "dstMode :%d", (unsigned int)config.dstMode);
-    ESP_LOGD("NukiBle.NukiLock", "hasFob :%d", (unsigned int)config.hasFob);
-    ESP_LOGD("NukiBle.NukiLock", "fobAction1 :%d", (unsigned int)config.fobAction1);
-    ESP_LOGD("NukiBle.NukiLock", "fobAction2 :%d", (unsigned int)config.fobAction2);
-    ESP_LOGD("NukiBle.NukiLock", "fobAction3 :%d", (unsigned int)config.fobAction3);
-    ESP_LOGD("NukiBle.NukiLock", "singleLock :%d", (unsigned int)config.singleLock);
-    ESP_LOGD("NukiBle.NukiLock", "advertisingMode :%d", (unsigned int)config.advertisingMode);
-    ESP_LOGD("NukiBle.NukiLock", "hasKeypad :%d", (unsigned int)config.hasKeypad);
-    ESP_LOGD("NukiBle.NukiLock", "firmwareVersion :%d.%d.%d", config.firmwareVersion[0], config.firmwareVersion[1], config.firmwareVersion[2]);
-    ESP_LOGD("NukiBle.NukiLock", "hardwareRevision :%d.%d", config.hardwareRevision[0], config.hardwareRevision[1]);
-    ESP_LOGD("NukiBle.NukiLock", "homeKitStatus :%d", (unsigned int)config.homeKitStatus);
-    ESP_LOGD("NukiBle.NukiLock", "timeZoneId :%d", (unsigned int)config.timeZoneId);
-    ESP_LOGD("NukiBle.NukiLock", "deviceType :%d", (unsigned int)config.deviceType);
-    ESP_LOGD("NukiBle.NukiLock", "wifiCapable :%d", (unsigned int)config.capabilities & 1);
-    ESP_LOGD("NukiBle.NukiLock", "threadCapable :%d", (unsigned int)(((unsigned int)config.capabilities & 2) != 0 ? 1 : 0));
-    ESP_LOGD("NukiBle.NukiLock", "hasKeypadV2 :%d", (unsigned int)config.hasKeypadV2);
-    ESP_LOGD("NukiBle.NukiLock", "matterStatus :%d", (unsigned int)config.matterStatus);
-    ESP_LOGD("NukiBle.NukiLock", "productVariant :%d", (unsigned int)config.productVariant);
+    ESP_LOGD("NukiBle.NukiLock", "nukiId: %d", (unsigned int)config.nukiId);
+    ESP_LOGD("NukiBle.NukiLock", "name: %s", (const char*)config.name);
+    ESP_LOGD("NukiBle.NukiLock", "latitude: %f", (const float)config.latitude);
+    ESP_LOGD("NukiBle.NukiLock", "longitude: %f", (const float)config.longitude);
+    ESP_LOGD("NukiBle.NukiLock", "autoUnlatch: %d", (unsigned int)config.autoUnlatch);
+    ESP_LOGD("NukiBle.NukiLock", "pairingEnabled: %d", (unsigned int)config.pairingEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "buttonEnabled: %d", (unsigned int)config.buttonEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "ledEnabled: %d", (unsigned int)config.ledEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "ledBrightness: %d", (unsigned int)config.ledBrightness);
+    ESP_LOGD("NukiBle.NukiLock", "currentTime Year: %d", (unsigned int)config.currentTimeYear);
+    ESP_LOGD("NukiBle.NukiLock", "currentTime Month: %d", (unsigned int)config.currentTimeMonth);
+    ESP_LOGD("NukiBle.NukiLock", "currentTime Day: %d", (unsigned int)config.currentTimeDay);
+    ESP_LOGD("NukiBle.NukiLock", "currentTime Hour: %d", (unsigned int)config.currentTimeHour);
+    ESP_LOGD("NukiBle.NukiLock", "currentTime Minute: %d", (unsigned int)config.currentTimeMinute);
+    ESP_LOGD("NukiBle.NukiLock", "currentTime Second: %d", (unsigned int)config.currentTimeSecond);
+    ESP_LOGD("NukiBle.NukiLock", "timeZoneOffset: %d", (unsigned int)config.timeZoneOffset);
+    ESP_LOGD("NukiBle.NukiLock", "dstMode: %d", (unsigned int)config.dstMode);
+    ESP_LOGD("NukiBle.NukiLock", "hasFob: %d", (unsigned int)config.hasFob);
+    ESP_LOGD("NukiBle.NukiLock", "fobAction1: %d", (unsigned int)config.fobAction1);
+    ESP_LOGD("NukiBle.NukiLock", "fobAction2: %d", (unsigned int)config.fobAction2);
+    ESP_LOGD("NukiBle.NukiLock", "fobAction3: %d", (unsigned int)config.fobAction3);
+    ESP_LOGD("NukiBle.NukiLock", "singleLock: %d", (unsigned int)config.singleLock);
+    ESP_LOGD("NukiBle.NukiLock", "advertisingMode: %d", (unsigned int)config.advertisingMode);
+    ESP_LOGD("NukiBle.NukiLock", "hasKeypad: %d", (unsigned int)config.hasKeypad);
+    ESP_LOGD("NukiBle.NukiLock", "firmwareVersion: %d.%d.%d", config.firmwareVersion[0], config.firmwareVersion[1], config.firmwareVersion[2]);
+    ESP_LOGD("NukiBle.NukiLock", "hardwareRevision: %d.%d", config.hardwareRevision[0], config.hardwareRevision[1]);
+    ESP_LOGD("NukiBle.NukiLock", "homeKitStatus: %d", (unsigned int)config.homeKitStatus);
+    ESP_LOGD("NukiBle.NukiLock", "timeZoneId: %d", (unsigned int)config.timeZoneId);
+    ESP_LOGD("NukiBle.NukiLock", "deviceType: %d", (unsigned int)config.deviceType);
+    ESP_LOGD("NukiBle.NukiLock", "wifiCapable: %d", (unsigned int)config.capabilities & 1);
+    ESP_LOGD("NukiBle.NukiLock", "threadCapable: %d", (unsigned int)(((unsigned int)config.capabilities & 2) != 0 ? 1:  0));
+    ESP_LOGD("NukiBle.NukiLock", "hasKeypadV2: %d", (unsigned int)config.hasKeypadV2);
+    ESP_LOGD("NukiBle.NukiLock", "matterStatus: %d", (unsigned int)config.matterStatus);
+    ESP_LOGD("NukiBle.NukiLock", "productVariant: %d", (unsigned int)config.productVariant);
   }
 }
 
 void logNewConfig(NewConfig newConfig, bool debug) {
   if (debug) {
-    ESP_LOGD("NukiBle.NukiLock", "name :%s", (const char*)newConfig.name);
-    ESP_LOGD("NukiBle.NukiLock", "latitude :%f", (const float)newConfig.latitude);
-    ESP_LOGD("NukiBle.NukiLock", "longitude :%f", (const float)newConfig.longitude);
-    ESP_LOGD("NukiBle.NukiLock", "autoUnlatch :%d", (unsigned int)newConfig.autoUnlatch);
-    ESP_LOGD("NukiBle.NukiLock", "pairingEnabled :%d", (unsigned int)newConfig.pairingEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "buttonEnabled :%d", (unsigned int)newConfig.buttonEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "ledEnabled :%d", (unsigned int)newConfig.ledEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "ledBrightness :%d", (unsigned int)newConfig.ledBrightness);
-    ESP_LOGD("NukiBle.NukiLock", "timeZoneOffset :%d", (unsigned int)newConfig.timeZoneOffset);
-    ESP_LOGD("NukiBle.NukiLock", "dstMode :%d", (unsigned int)newConfig.dstMode);
-    ESP_LOGD("NukiBle.NukiLock", "fobAction1 :%d", (unsigned int)newConfig.fobAction1);
-    ESP_LOGD("NukiBle.NukiLock", "fobAction2 :%d", (unsigned int)newConfig.fobAction2);
-    ESP_LOGD("NukiBle.NukiLock", "fobAction3 :%d", (unsigned int)newConfig.fobAction3);
-    ESP_LOGD("NukiBle.NukiLock", "singleLock :%d", (unsigned int)newConfig.singleLock);
-    ESP_LOGD("NukiBle.NukiLock", "advertisingMode :%d", (unsigned int)newConfig.advertisingMode);
-    ESP_LOGD("NukiBle.NukiLock", "timeZoneId :%d", (unsigned int)newConfig.timeZoneId);
+    ESP_LOGD("NukiBle.NukiLock", "name: %s", (const char*)newConfig.name);
+    ESP_LOGD("NukiBle.NukiLock", "latitude: %f", (const float)newConfig.latitude);
+    ESP_LOGD("NukiBle.NukiLock", "longitude: %f", (const float)newConfig.longitude);
+    ESP_LOGD("NukiBle.NukiLock", "autoUnlatch: %d", (unsigned int)newConfig.autoUnlatch);
+    ESP_LOGD("NukiBle.NukiLock", "pairingEnabled: %d", (unsigned int)newConfig.pairingEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "buttonEnabled: %d", (unsigned int)newConfig.buttonEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "ledEnabled: %d", (unsigned int)newConfig.ledEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "ledBrightness: %d", (unsigned int)newConfig.ledBrightness);
+    ESP_LOGD("NukiBle.NukiLock", "timeZoneOffset: %d", (unsigned int)newConfig.timeZoneOffset);
+    ESP_LOGD("NukiBle.NukiLock", "dstMode: %d", (unsigned int)newConfig.dstMode);
+    ESP_LOGD("NukiBle.NukiLock", "fobAction1: %d", (unsigned int)newConfig.fobAction1);
+    ESP_LOGD("NukiBle.NukiLock", "fobAction2: %d", (unsigned int)newConfig.fobAction2);
+    ESP_LOGD("NukiBle.NukiLock", "fobAction3: %d", (unsigned int)newConfig.fobAction3);
+    ESP_LOGD("NukiBle.NukiLock", "singleLock: %d", (unsigned int)newConfig.singleLock);
+    ESP_LOGD("NukiBle.NukiLock", "advertisingMode: %d", (unsigned int)newConfig.advertisingMode);
+    ESP_LOGD("NukiBle.NukiLock", "timeZoneId: %d", (unsigned int)newConfig.timeZoneId);
   }
 }
 
@@ -650,62 +650,234 @@ void logLogEntry(LogEntry logEntry, bool debug) {
 
 void logAdvancedConfig(AdvancedConfig advancedConfig, bool debug) {
   if (debug) {
-    ESP_LOGD("NukiBle.NukiLock", "totalDegrees :%d", (unsigned int)advancedConfig.totalDegrees);
-    ESP_LOGD("NukiBle.NukiLock", "unlockedPositionOffsetDegrees :%d", (unsigned int)advancedConfig.unlockedPositionOffsetDegrees);
-    ESP_LOGD("NukiBle.NukiLock", "lockedPositionOffsetDegrees :%f", (const float)advancedConfig.lockedPositionOffsetDegrees);
-    ESP_LOGD("NukiBle.NukiLock", "singleLockedPositionOffsetDegrees :%f", (const float)advancedConfig.singleLockedPositionOffsetDegrees);
-    ESP_LOGD("NukiBle.NukiLock", "unlockedToLockedTransitionOffsetDegrees :%d", (unsigned int)advancedConfig.unlockedToLockedTransitionOffsetDegrees);
-    ESP_LOGD("NukiBle.NukiLock", "lockNgoTimeout :%d", (unsigned int)advancedConfig.lockNgoTimeout);
-    ESP_LOGD("NukiBle.NukiLock", "singleButtonPressAction :%d", (unsigned int)advancedConfig.singleButtonPressAction);
-    ESP_LOGD("NukiBle.NukiLock", "doubleButtonPressAction :%d", (unsigned int)advancedConfig.doubleButtonPressAction);
-    ESP_LOGD("NukiBle.NukiLock", "detachedCylinder :%d", (unsigned int)advancedConfig.detachedCylinder);
-    ESP_LOGD("NukiBle.NukiLock", "batteryType :%d", (unsigned int)advancedConfig.batteryType);
-    ESP_LOGD("NukiBle.NukiLock", "automaticBatteryTypeDetection :%d", (unsigned int)advancedConfig.automaticBatteryTypeDetection);
-    ESP_LOGD("NukiBle.NukiLock", "unlatchDuration :%d", (unsigned int)advancedConfig.unlatchDuration);
-    ESP_LOGD("NukiBle.NukiLock", "autoLockTimeOut :%d", (unsigned int)advancedConfig.autoLockTimeOut);
-    ESP_LOGD("NukiBle.NukiLock", "autoUnLockDisabled :%d", (unsigned int)advancedConfig.autoUnLockDisabled);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeEnabled :%d", (unsigned int)advancedConfig.nightModeEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeStartTime Hour :%d", (unsigned int)advancedConfig.nightModeStartTime[0]);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeStartTime Minute :%d", (unsigned int)advancedConfig.nightModeStartTime[1]);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeEndTime Hour :%d", (unsigned int)advancedConfig.nightModeEndTime[0]);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeEndTime Minute :%d", (unsigned int)advancedConfig.nightModeEndTime[1]);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeAutoLockEnabled :%d", (unsigned int)advancedConfig.nightModeAutoLockEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeAutoUnlockDisabled :%d", (unsigned int)advancedConfig.nightModeAutoUnlockDisabled);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeImmediateLockOnStart :%d", (unsigned int)advancedConfig.nightModeImmediateLockOnStart);
-    ESP_LOGD("NukiBle.NukiLock", "autoLockEnabled :%d", (unsigned int)advancedConfig.autoLockEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "immediateAutoLockEnabled :%d", (unsigned int)advancedConfig.immediateAutoLockEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "autoUpdateEnabled :%d", (unsigned int)advancedConfig.autoUpdateEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "motorSpeed :%d", (unsigned int)advancedConfig.motorSpeed);
-    ESP_LOGD("NukiBle.NukiLock", "enableSlowSpeedDuringNightMode :%d", (unsigned int)advancedConfig.enableSlowSpeedDuringNightMode);
+    ESP_LOGD("NukiBle.NukiLock", "totalDegrees: %d", (unsigned int)advancedConfig.totalDegrees);
+    ESP_LOGD("NukiBle.NukiLock", "unlockedPositionOffsetDegrees: %d", (unsigned int)advancedConfig.unlockedPositionOffsetDegrees);
+    ESP_LOGD("NukiBle.NukiLock", "lockedPositionOffsetDegrees: %f", (const float)advancedConfig.lockedPositionOffsetDegrees);
+    ESP_LOGD("NukiBle.NukiLock", "singleLockedPositionOffsetDegrees: %f", (const float)advancedConfig.singleLockedPositionOffsetDegrees);
+    ESP_LOGD("NukiBle.NukiLock", "unlockedToLockedTransitionOffsetDegrees: %d", (unsigned int)advancedConfig.unlockedToLockedTransitionOffsetDegrees);
+    ESP_LOGD("NukiBle.NukiLock", "lockNgoTimeout: %d", (unsigned int)advancedConfig.lockNgoTimeout);
+    ESP_LOGD("NukiBle.NukiLock", "singleButtonPressAction: %d", (unsigned int)advancedConfig.singleButtonPressAction);
+    ESP_LOGD("NukiBle.NukiLock", "doubleButtonPressAction: %d", (unsigned int)advancedConfig.doubleButtonPressAction);
+    ESP_LOGD("NukiBle.NukiLock", "detachedCylinder: %d", (unsigned int)advancedConfig.detachedCylinder);
+    ESP_LOGD("NukiBle.NukiLock", "batteryType: %d", (unsigned int)advancedConfig.batteryType);
+    ESP_LOGD("NukiBle.NukiLock", "automaticBatteryTypeDetection: %d", (unsigned int)advancedConfig.automaticBatteryTypeDetection);
+    ESP_LOGD("NukiBle.NukiLock", "unlatchDuration: %d", (unsigned int)advancedConfig.unlatchDuration);
+    ESP_LOGD("NukiBle.NukiLock", "autoLockTimeOut: %d", (unsigned int)advancedConfig.autoLockTimeOut);
+    ESP_LOGD("NukiBle.NukiLock", "autoUnLockDisabled: %d", (unsigned int)advancedConfig.autoUnLockDisabled);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeEnabled: %d", (unsigned int)advancedConfig.nightModeEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeStartTime Hour: %d", (unsigned int)advancedConfig.nightModeStartTime[0]);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeStartTime Minute: %d", (unsigned int)advancedConfig.nightModeStartTime[1]);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeEndTime Hour: %d", (unsigned int)advancedConfig.nightModeEndTime[0]);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeEndTime Minute: %d", (unsigned int)advancedConfig.nightModeEndTime[1]);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeAutoLockEnabled: %d", (unsigned int)advancedConfig.nightModeAutoLockEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeAutoUnlockDisabled: %d", (unsigned int)advancedConfig.nightModeAutoUnlockDisabled);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeImmediateLockOnStart: %d", (unsigned int)advancedConfig.nightModeImmediateLockOnStart);
+    ESP_LOGD("NukiBle.NukiLock", "autoLockEnabled: %d", (unsigned int)advancedConfig.autoLockEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "immediateAutoLockEnabled: %d", (unsigned int)advancedConfig.immediateAutoLockEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "autoUpdateEnabled: %d", (unsigned int)advancedConfig.autoUpdateEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "motorSpeed: %d", (unsigned int)advancedConfig.motorSpeed);
+    ESP_LOGD("NukiBle.NukiLock", "enableSlowSpeedDuringNightMode: %d", (unsigned int)advancedConfig.enableSlowSpeedDuringNightMode);
   }
 }
 
 void logNewAdvancedConfig(NewAdvancedConfig newAdvancedConfig, bool debug) {
   if (debug) {
-    ESP_LOGD("NukiBle.NukiLock", "unlockedPositionOffsetDegrees :%d", (unsigned int)newAdvancedConfig.unlockedPositionOffsetDegrees);
-    ESP_LOGD("NukiBle.NukiLock", "lockedPositionOffsetDegrees :%f", (const float)newAdvancedConfig.lockedPositionOffsetDegrees);
-    ESP_LOGD("NukiBle.NukiLock", "singleLockedPositionOffsetDegrees :%f", (const float)newAdvancedConfig.singleLockedPositionOffsetDegrees);
-    ESP_LOGD("NukiBle.NukiLock", "unlockedToLockedTransitionOffsetDegrees :%d", (unsigned int)newAdvancedConfig.unlockedToLockedTransitionOffsetDegrees);
-    ESP_LOGD("NukiBle.NukiLock", "lockNgoTimeout :%d", (unsigned int)newAdvancedConfig.lockNgoTimeout);
-    ESP_LOGD("NukiBle.NukiLock", "singleButtonPressAction :%d", (unsigned int)newAdvancedConfig.singleButtonPressAction);
-    ESP_LOGD("NukiBle.NukiLock", "doubleButtonPressAction :%d", (unsigned int)newAdvancedConfig.doubleButtonPressAction);
-    ESP_LOGD("NukiBle.NukiLock", "detachedCylinder :%d", (unsigned int)newAdvancedConfig.detachedCylinder);
-    ESP_LOGD("NukiBle.NukiLock", "batteryType :%d", (unsigned int)newAdvancedConfig.batteryType);
-    ESP_LOGD("NukiBle.NukiLock", "automaticBatteryTypeDetection :%d", (unsigned int)newAdvancedConfig.automaticBatteryTypeDetection);
-    ESP_LOGD("NukiBle.NukiLock", "unlatchDuration :%d", (unsigned int)newAdvancedConfig.unlatchDuration);
-    ESP_LOGD("NukiBle.NukiLock", "autoUnLockTimeOut :%d", (unsigned int)newAdvancedConfig.autoLockTimeOut);
-    ESP_LOGD("NukiBle.NukiLock", "autoUnLockDisabled :%d", (unsigned int)newAdvancedConfig.autoUnLockDisabled);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeEnabled :%d", (unsigned int)newAdvancedConfig.nightModeEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeStartTime Hour :%d", (unsigned int)newAdvancedConfig.nightModeStartTime[0]);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeStartTime Minute :%d", (unsigned int)newAdvancedConfig.nightModeStartTime[1]);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeEndTime Hour :%d", (unsigned int)newAdvancedConfig.nightModeEndTime[0]);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeEndTime Minute :%d", (unsigned int)newAdvancedConfig.nightModeEndTime[1]);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeAutoLockEnabled :%d", (unsigned int)newAdvancedConfig.nightModeAutoLockEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeAutoUnlockDisabled :%d", (unsigned int)newAdvancedConfig.nightModeAutoUnlockDisabled);
-    ESP_LOGD("NukiBle.NukiLock", "nightModeImmediateLockOnStart :%d", (unsigned int)newAdvancedConfig.nightModeImmediateLockOnStart);
-    ESP_LOGD("NukiBle.NukiLock", "autoLockEnabled :%d", (unsigned int)newAdvancedConfig.autoLockEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "immediateAutoLockEnabled :%d", (unsigned int)newAdvancedConfig.immediateAutoLockEnabled);
-    ESP_LOGD("NukiBle.NukiLock", "autoUpdateEnabled :%d", (unsigned int)newAdvancedConfig.autoUpdateEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "unlockedPositionOffsetDegrees: %d", (unsigned int)newAdvancedConfig.unlockedPositionOffsetDegrees);
+    ESP_LOGD("NukiBle.NukiLock", "lockedPositionOffsetDegrees: %f", (const float)newAdvancedConfig.lockedPositionOffsetDegrees);
+    ESP_LOGD("NukiBle.NukiLock", "singleLockedPositionOffsetDegrees: %f", (const float)newAdvancedConfig.singleLockedPositionOffsetDegrees);
+    ESP_LOGD("NukiBle.NukiLock", "unlockedToLockedTransitionOffsetDegrees: %d", (unsigned int)newAdvancedConfig.unlockedToLockedTransitionOffsetDegrees);
+    ESP_LOGD("NukiBle.NukiLock", "lockNgoTimeout: %d", (unsigned int)newAdvancedConfig.lockNgoTimeout);
+    ESP_LOGD("NukiBle.NukiLock", "singleButtonPressAction: %d", (unsigned int)newAdvancedConfig.singleButtonPressAction);
+    ESP_LOGD("NukiBle.NukiLock", "doubleButtonPressAction: %d", (unsigned int)newAdvancedConfig.doubleButtonPressAction);
+    ESP_LOGD("NukiBle.NukiLock", "detachedCylinder: %d", (unsigned int)newAdvancedConfig.detachedCylinder);
+    ESP_LOGD("NukiBle.NukiLock", "batteryType: %d", (unsigned int)newAdvancedConfig.batteryType);
+    ESP_LOGD("NukiBle.NukiLock", "automaticBatteryTypeDetection: %d", (unsigned int)newAdvancedConfig.automaticBatteryTypeDetection);
+    ESP_LOGD("NukiBle.NukiLock", "unlatchDuration: %d", (unsigned int)newAdvancedConfig.unlatchDuration);
+    ESP_LOGD("NukiBle.NukiLock", "autoUnLockTimeOut: %d", (unsigned int)newAdvancedConfig.autoLockTimeOut);
+    ESP_LOGD("NukiBle.NukiLock", "autoUnLockDisabled: %d", (unsigned int)newAdvancedConfig.autoUnLockDisabled);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeEnabled: %d", (unsigned int)newAdvancedConfig.nightModeEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeStartTime Hour: %d", (unsigned int)newAdvancedConfig.nightModeStartTime[0]);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeStartTime Minute: %d", (unsigned int)newAdvancedConfig.nightModeStartTime[1]);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeEndTime Hour: %d", (unsigned int)newAdvancedConfig.nightModeEndTime[0]);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeEndTime Minute: %d", (unsigned int)newAdvancedConfig.nightModeEndTime[1]);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeAutoLockEnabled: %d", (unsigned int)newAdvancedConfig.nightModeAutoLockEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeAutoUnlockDisabled: %d", (unsigned int)newAdvancedConfig.nightModeAutoUnlockDisabled);
+    ESP_LOGD("NukiBle.NukiLock", "nightModeImmediateLockOnStart: %d", (unsigned int)newAdvancedConfig.nightModeImmediateLockOnStart);
+    ESP_LOGD("NukiBle.NukiLock", "autoLockEnabled: %d", (unsigned int)newAdvancedConfig.autoLockEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "immediateAutoLockEnabled: %d", (unsigned int)newAdvancedConfig.immediateAutoLockEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "autoUpdateEnabled: %d", (unsigned int)newAdvancedConfig.autoUpdateEnabled);
+  }
+}
+
+void logWifiScanEntry(WifiScanEntry wifiScanEntry, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "ssid: %s", (const char*)wifiScanEntry.ssid);
+    ESP_LOGD("NukiBle.NukiLock", "type: %d", (unsigned int)wifiScanEntry.type);
+    ESP_LOGD("NukiBle.NukiLock", "signal raw: %d", (unsigned int)wifiScanEntry.signal);
+    ESP_LOGD("NukiBle.NukiLock", "signal: %d", (unsigned int)(wifiScanEntry.signal & 255));
+  }
+}
+
+void logMqttConfig(MqttConfig mqttConfig, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "enabled: %d", (unsigned int)mqttConfig.enabled);
+    ESP_LOGD("NukiBle.NukiLock", "hostName: %s", (const char*)mqttConfig.hostName);
+    ESP_LOGD("NukiBle.NukiLock", "userName: %s", (const char*)mqttConfig.userName);
+    ESP_LOGD("NukiBle.NukiLock", "secureConnection: %d", (unsigned int)mqttConfig.secureConnection);
+    ESP_LOGD("NukiBle.NukiLock", "autoDiscovery: %d", (unsigned int)mqttConfig.autoDiscovery);
+    ESP_LOGD("NukiBle.NukiLock", "lockingEnabled: %d", (unsigned int)mqttConfig.lockingEnabled);
+  }
+}
+
+void logMqttConfigForMigration(MqttConfigForMigration mqttConfigForMigration, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "enabled: %d", (unsigned int)mqttConfigForMigration.enabled);
+    ESP_LOGD("NukiBle.NukiLock", "hostName: %s", (const char*)mqttConfigForMigration.hostName);
+    ESP_LOGD("NukiBle.NukiLock", "userName: %s", (const char*)mqttConfigForMigration.userName);
+    ESP_LOGD("NukiBle.NukiLock", "secureConnection: %d", (unsigned int)mqttConfigForMigration.secureConnection);
+    ESP_LOGD("NukiBle.NukiLock", "autoDiscovery: %d", (unsigned int)mqttConfigForMigration.autoDiscovery);
+    ESP_LOGD("NukiBle.NukiLock", "lockingEnabled: %d", (unsigned int)mqttConfigForMigration.lockingEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "passphrase: %s", (const char*)mqttConfigForMigration.passphrase);
+  }
+}
+
+void logWifiConfig(WifiConfig wifiConfig, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "serverBridgeId: %d", (unsigned int)wifiConfig.serverBridgeId);
+    ESP_LOGD("NukiBle.NukiLock", "wifiEnabled: %d", (unsigned int)wifiConfig.wifiEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "wifiExpertSettings composed value: %d", (unsigned int)wifiConfig.wifiExpertSettings);
+    ESP_LOGD("NukiBle.NukiLock", "expertSettingsMode: %d", (unsigned int)(wifiConfig.wifiExpertSettings & 3));
+    ESP_LOGD("NukiBle.NukiLock", "broadcastFilterSettings: %d", (unsigned int)((wifiConfig.wifiExpertSettings >> 2) & 3));
+    ESP_LOGD("NukiBle.NukiLock", "dtimSkipSettings: %d", (unsigned int)((wifiConfig.wifiExpertSettings >> 4) & 7));
+    ESP_LOGD("NukiBle.NukiLock", "sseSkipSettings: %d", (unsigned int)((wifiConfig.wifiExpertSettings >> 7) & 7));
+    ESP_LOGD("NukiBle.NukiLock", "powersafeMode: %d", (unsigned int)((wifiConfig.wifiExpertSettings >> 10) & 3));
+    ESP_LOGD("NukiBle.NukiLock", "activePingEnabled: %d", (unsigned int)((wifiConfig.wifiExpertSettings >> 12) & 1));
+  }
+}
+
+void logWifiConfigForMigration(WifiConfigForMigration wifiConfigForMigration, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "ssid: %s", (const char*)wifiConfigForMigration.ssid);
+    ESP_LOGD("NukiBle.NukiLock", "type: %d", (unsigned int)wifiConfigForMigration.type);
+    ESP_LOGD("NukiBle.NukiLock", "passphrase: %s", (const char*)wifiConfigForMigration.passphrase);
+  }
+}
+
+void logKeypad2Config(Keypad2Config keypad2Config, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "updatePending: %d", (unsigned int)keypad2Config.updatePending);
+    ESP_LOGD("NukiBle.NukiLock", "ledBrightness: %d", (unsigned int)keypad2Config.ledBrightness);
+    ESP_LOGD("NukiBle.NukiLock", "batteryType: %d", (unsigned int)keypad2Config.batteryType);
+    ESP_LOGD("NukiBle.NukiLock", "buttonMode: %d", (unsigned int)keypad2Config.buttonMode);
+    ESP_LOGD("NukiBle.NukiLock", "lockAction: %d", (unsigned int)keypad2Config.lockAction);
+  }
+}
+
+void logDoorSensorConfig(DoorSensorConfig doorSensorConfig, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "enabled: %d", (unsigned int)doorSensorConfig.enabled);
+    ESP_LOGD("NukiBle.NukiLock", "doorAjarTimeout: %d", (unsigned int)doorSensorConfig.doorAjarTimeout);
+    ESP_LOGD("NukiBle.NukiLock", "doorAjarLoggingEnabled: %d", (unsigned int)doorSensorConfig.doorAjarLoggingEnabled);
+    ESP_LOGD("NukiBle.NukiLock", "doorStatusMismatchLoggingEnabled: %d", (unsigned int)doorSensorConfig.doorStatusMismatchLoggingEnabled);
+  }
+}
+
+void logFingerprintEntry(FingerprintEntry fingerprintEntry, bool debug) {
+  if (debug) {
+    char hexString[65]; // 32 bytes * 2 chars + 1 null terminator
+    for (size_t i = 0; i < 32; i++) {
+        sprintf(&hexString[i*2], "%02x", fingerprintEntry.fingerprintId[i]);
+    }
+    hexString[64] = '\0';
+
+    ESP_LOGD("NukiBle.NukiLock", "fingerprintId: %s", hexString);
+    ESP_LOGD("NukiBle.NukiLock", "keypadCodeId: %d", (unsigned int)fingerprintEntry.keypadCodeId);
+    ESP_LOGD("NukiBle.NukiLock", "name: %s", fingerprintEntry.name);
+  }
+}
+
+void logAccessoryInfo(AccessoryInfo accessoryInfo, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "dateYear: %d", (unsigned int)accessoryInfo.dateYear);
+    ESP_LOGD("NukiBle.NukiLock", "dateMonth: %d", (unsigned int)accessoryInfo.dateMonth);
+    ESP_LOGD("NukiBle.NukiLock", "dateDay: %d", (unsigned int)accessoryInfo.dateDay);
+    ESP_LOGD("NukiBle.NukiLock", "dateHour: %d", (unsigned int)accessoryInfo.dateHour);
+    ESP_LOGD("NukiBle.NukiLock", "dateMinute: %d", (unsigned int)accessoryInfo.dateMinute);
+    ESP_LOGD("NukiBle.NukiLock", "dateSecond: %d", (unsigned int)accessoryInfo.dateSecond);
+    ESP_LOGD("NukiBle.NukiLock", "accessoryNukiId: %d", (unsigned int)accessoryInfo.accessoryNukiId);
+    ESP_LOGD("NukiBle.NukiLock", "accessoryType: %d", (unsigned int)accessoryInfo.accessoryType);
+    ESP_LOGD("NukiBle.NukiLock", "firmwareVersion: %d.%d.%d", accessoryInfo.firmwareVersion[0], accessoryInfo.firmwareVersion[1], accessoryInfo.firmwareVersion[2]);
+    ESP_LOGD("NukiBle.NukiLock", "hardwareRevision: %d.%d", accessoryInfo.hardwareRevision[0], accessoryInfo.hardwareRevision[1]);
+    ESP_LOGD("NukiBle.NukiLock", "productVariantDifferentiator: %d", (unsigned int)accessoryInfo.productVariantDifferentiator);
+    ESP_LOGD("NukiBle.NukiLock", "mostRecentBatteryVoltage: %d", (unsigned int)accessoryInfo.mostRecentBatteryVoltage);
+    ESP_LOGD("NukiBle.NukiLock", "mostRecentTemperature: %d", (unsigned int)accessoryInfo.mostRecentTemperature);
+  }
+}
+
+void logDailyStatistics(DailyStatistics dailyStatistics, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "dateYear: %d", (unsigned int)dailyStatistics.dateYear);
+    ESP_LOGD("NukiBle.NukiLock", "dateMonth: %d", (unsigned int)dailyStatistics.dateMonth);
+    ESP_LOGD("NukiBle.NukiLock", "dateDay: %d", (unsigned int)dailyStatistics.dateDay);
+    //ESP_LOGD("NukiBle.NukiLock", "dateHour: %d", (unsigned int)dailyStatistics.dateHour);
+    //ESP_LOGD("NukiBle.NukiLock", "dateMinute: %d", (unsigned int)dailyStatistics.dateMinute);
+    //ESP_LOGD("NukiBle.NukiLock", "dateSecond: %d", (unsigned int)dailyStatistics.dateSecond);
+    ESP_LOGD("NukiBle.NukiLock", "version: %d", (unsigned int)dailyStatistics.version);
+    ESP_LOGD("NukiBle.NukiLock", "countSuccessfulLockActions: %d", (unsigned int)dailyStatistics.countSuccessfulLockActions);
+    ESP_LOGD("NukiBle.NukiLock", "countErroneousLockActions: %d", (unsigned int)dailyStatistics.countErroneousLockActions);
+    ESP_LOGD("NukiBle.NukiLock", "avgCurrentConsumptionLock: %d", (unsigned int)dailyStatistics.avgCurrentConsumptionLock);
+    ESP_LOGD("NukiBle.NukiLock", "maxCurrentConsumptionLock: %d", (unsigned int)dailyStatistics.maxCurrentConsumptionLock);
+    ESP_LOGD("NukiBle.NukiLock", "batteryMinStartVoltageLock: %d", (unsigned int)dailyStatistics.batteryMinStartVoltageLock);
+    ESP_LOGD("NukiBle.NukiLock", "countSuccessfulUnlatchActions: %d", (unsigned int)dailyStatistics.countSuccessfulUnlatchActions);
+    ESP_LOGD("NukiBle.NukiLock", "countErroneousUnlatchActions: %d", (unsigned int)dailyStatistics.countErroneousUnlatchActions);
+    ESP_LOGD("NukiBle.NukiLock", "avgCurrentConsumptionUnlatch: %d", (unsigned int)dailyStatistics.avgCurrentConsumptionUnlatch);
+    ESP_LOGD("NukiBle.NukiLock", "maxCurrentConsumptionUnlatch: %d", (unsigned int)dailyStatistics.maxCurrentConsumptionUnlatch);
+    ESP_LOGD("NukiBle.NukiLock", "batteryMinStartVoltageUnlatch: %d", (unsigned int)dailyStatistics.batteryMinStartVoltageUnlatch);
+    ESP_LOGD("NukiBle.NukiLock", "incomingCommands: %d", (unsigned int)dailyStatistics.incomingCommands);
+    ESP_LOGD("NukiBle.NukiLock", "outgoingCommands: %d", (unsigned int)dailyStatistics.outgoingCommands);
+    ESP_LOGD("NukiBle.NukiLock", "maxTemperature: %d", (unsigned int)dailyStatistics.maxTemperature);
+    ESP_LOGD("NukiBle.NukiLock", "minTemperature: %d", (unsigned int)dailyStatistics.minTemperature);
+    ESP_LOGD("NukiBle.NukiLock", "avgTemperature: %d", (unsigned int)dailyStatistics.avgTemperature);
+    ESP_LOGD("NukiBle.NukiLock", "numDoorSensorStatusChanges: %d", (unsigned int)dailyStatistics.numDoorSensorStatusChanges);
+    ESP_LOGD("NukiBle.NukiLock", "maxBatteryPercentage: %d", (unsigned int)dailyStatistics.maxBatteryPercentage);
+    ESP_LOGD("NukiBle.NukiLock", "minBatteryPercentage: %d", (unsigned int)dailyStatistics.minBatteryPercentage);
+    ESP_LOGD("NukiBle.NukiLock", "idleTime: %d", (unsigned int)dailyStatistics.idleTime);
+    ESP_LOGD("NukiBle.NukiLock", "connectionTime: %d", (unsigned int)dailyStatistics.connectionTime);
+    ESP_LOGD("NukiBle.NukiLock", "actionTime: %d", (unsigned int)dailyStatistics.actionTime);
+  }
+}
+
+void logGeneralStatistics(GeneralStatistics generalStatistics, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "version: %d", (unsigned int)generalStatistics.version);
+    ESP_LOGD("NukiBle.NukiLock", "firstCalibrationYear: %d", (unsigned int)generalStatistics.firstCalibrationYear);
+    ESP_LOGD("NukiBle.NukiLock", "firstCalibrationMonth: %d", (unsigned int)generalStatistics.firstCalibrationMonth);
+    ESP_LOGD("NukiBle.NukiLock", "firstCalibrationDay: %d", (unsigned int)generalStatistics.firstCalibrationDay);
+    ESP_LOGD("NukiBle.NukiLock", "calibrationCount: %d", (unsigned int)generalStatistics.calibrationCount);
+    ESP_LOGD("NukiBle.NukiLock", "lockActionCount: %d", (unsigned int)generalStatistics.lockActionCount);
+    ESP_LOGD("NukiBle.NukiLock", "unlatchCount: %d", (unsigned int)generalStatistics.unlatchCount);
+    ESP_LOGD("NukiBle.NukiLock", "lastRebootDateYear: %d", (unsigned int)generalStatistics.lastRebootDateYear);
+    ESP_LOGD("NukiBle.NukiLock", "lastRebootDateMonth: %d", (unsigned int)generalStatistics.lastRebootDateMonth);
+    ESP_LOGD("NukiBle.NukiLock", "lastRebootDateDay: %d", (unsigned int)generalStatistics.lastRebootDateDay);
+    ESP_LOGD("NukiBle.NukiLock", "lastRebootDateHour: %d", (unsigned int)generalStatistics.lastRebootDateHour);
+    ESP_LOGD("NukiBle.NukiLock", "lastRebootDateMinute: %d", (unsigned int)generalStatistics.lastRebootDateMinute);
+    ESP_LOGD("NukiBle.NukiLock", "lastRebootDateSecond: %d", (unsigned int)generalStatistics.lastRebootDateSecond);
+    ESP_LOGD("NukiBle.NukiLock", "lastChargeDateYear: %d", (unsigned int)generalStatistics.lastChargeDateYear);
+    ESP_LOGD("NukiBle.NukiLock", "lastChargeDateMonth: %d", (unsigned int)generalStatistics.lastChargeDateMonth);
+    ESP_LOGD("NukiBle.NukiLock", "lastChargeDateDay: %d", (unsigned int)generalStatistics.lastChargeDateDay);
+    ESP_LOGD("NukiBle.NukiLock", "lastChargeDateHour: %d", (unsigned int)generalStatistics.lastChargeDateHour);
+    ESP_LOGD("NukiBle.NukiLock", "lastChargeDateMinute: %d", (unsigned int)generalStatistics.lastChargeDateMinute);
+    ESP_LOGD("NukiBle.NukiLock", "lastChargeDateSecond: %d", (unsigned int)generalStatistics.lastChargeDateSecond);
+    ESP_LOGD("NukiBle.NukiLock", "initialBatteryVoltage: %d", (unsigned int)generalStatistics.initialBatteryVoltage);
+    ESP_LOGD("NukiBle.NukiLock", "numActionsDuringBatteryCycle: %d", (unsigned int)generalStatistics.numActionsDuringBatteryCycle);
+    ESP_LOGD("NukiBle.NukiLock", "numUnexpectedReboots: %d", (unsigned int)generalStatistics.numUnexpectedReboots);
+  }
+}
+
+void logInternalLogEntry(InternalLogEntry internalLogEntry, bool debug) {
+  if (debug) {
+    ESP_LOGD("NukiBle.NukiLock", "[%d] type:%d authId:%d %d-%d-%d %d:%d:%d ", internalLogEntry.index, internalLogEntry.loggingType, internalLogEntry.authId, internalLogEntry.timeStampYear, internalLogEntry.timeStampMonth, internalLogEntry.timeStampDay, internalLogEntry.timeStampHour, internalLogEntry.timeStampMinute, internalLogEntry.timeStampSecond);
+    ESP_LOGD("NukiBle.NukiLock", "data: %d", (unsigned int)internalLogEntry.data);
   }
 }
 

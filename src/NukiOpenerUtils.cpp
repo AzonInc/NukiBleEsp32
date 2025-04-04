@@ -199,18 +199,18 @@ void logConfig(Config config, bool debug) {
 
 void logNewConfig(NewConfig newConfig, bool debug) {
   if (debug) {
-    ESP_LOGD("NukiBle.NukiOpener", "name :%s", (const char*)newConfig.name);
-    ESP_LOGD("NukiBle.NukiOpener", "latitude :%f", (const float)newConfig.latitude);
-    ESP_LOGD("NukiBle.NukiOpener", "longitude :%f", (const float)newConfig.longitude);
-    ESP_LOGD("NukiBle.NukiOpener", "pairingEnabled :%d", (unsigned int)newConfig.pairingEnabled);
-    ESP_LOGD("NukiBle.NukiOpener", "buttonEnabled :%d", (unsigned int)newConfig.buttonEnabled);
-    ESP_LOGD("NukiBle.NukiOpener", "timeZoneOffset :%d", (unsigned int)newConfig.timeZoneOffset);
-    ESP_LOGD("NukiBle.NukiOpener", "dstMode :%d", (unsigned int)newConfig.dstMode);
-    ESP_LOGD("NukiBle.NukiOpener", "fobAction1 :%d", (unsigned int)newConfig.fobAction1);
-    ESP_LOGD("NukiBle.NukiOpener", "fobAction2 :%d", (unsigned int)newConfig.fobAction2);
-    ESP_LOGD("NukiBle.NukiOpener", "fobAction3 :%d", (unsigned int)newConfig.fobAction3);
-    ESP_LOGD("NukiBle.NukiOpener", "advertisingMode :%d", (unsigned int)newConfig.advertisingMode);
-    ESP_LOGD("NukiBle.NukiOpener", "timeZoneId :%d", (unsigned int)newConfig.timeZoneId);
+    ESP_LOGD("NukiBle.NukiOpener", "name: %s", (const char*)newConfig.name);
+    ESP_LOGD("NukiBle.NukiOpener", "latitude: %f", (const float)newConfig.latitude);
+    ESP_LOGD("NukiBle.NukiOpener", "longitude: %f", (const float)newConfig.longitude);
+    ESP_LOGD("NukiBle.NukiOpener", "pairingEnabled: %d", (unsigned int)newConfig.pairingEnabled);
+    ESP_LOGD("NukiBle.NukiOpener", "buttonEnabled: %d", (unsigned int)newConfig.buttonEnabled);
+    ESP_LOGD("NukiBle.NukiOpener", "timeZoneOffset: %d", (unsigned int)newConfig.timeZoneOffset);
+    ESP_LOGD("NukiBle.NukiOpener", "dstMode: %d", (unsigned int)newConfig.dstMode);
+    ESP_LOGD("NukiBle.NukiOpener", "fobAction1: %d", (unsigned int)newConfig.fobAction1);
+    ESP_LOGD("NukiBle.NukiOpener", "fobAction2: %d", (unsigned int)newConfig.fobAction2);
+    ESP_LOGD("NukiBle.NukiOpener", "fobAction3: %d", (unsigned int)newConfig.fobAction3);
+    ESP_LOGD("NukiBle.NukiOpener", "advertisingMode: %d", (unsigned int)newConfig.advertisingMode);
+    ESP_LOGD("NukiBle.NukiOpener", "timeZoneId: %d", (unsigned int)newConfig.timeZoneId);
   }
 }
 

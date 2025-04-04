@@ -646,6 +646,38 @@ Nuki::CmdResult NukiBle::addKeypadEntry(NewKeypadEntry newKeypadEntry) {
   return result;
 }
 
+Nuki::CmdResult NukiBle::genericCommand(Command command, bool withPin) {
+  NukiLock::Action action;
+
+  if (withPin) {
+    action.cmdType = Nuki::CommandType::CommandWithChallengeAndPin;
+  } else {
+    action.cmdType = Nuki::CommandType::CommandWithChallenge;
+  }  
+  action.command = command;
+    
+  Nuki::CmdResult result = executeAction(action);
+  return result;
+}
+
+Nuki::CmdResult NukiBle::requestDailyStatistics() {
+  NukiLock::Action action;
+  unsigned char payload[5] = {0};
+  payload[0] = 0;
+  payload[1] = 0;
+  payload[2] = 0;
+  payload[3] = 0;
+  payload[4] = 5;
+
+  action.cmdType = Nuki::CommandType::CommandWithChallengeAndPin;
+  action.command = Nuki::Command::RequestDailyStatistics;
+  memcpy(action.payload, &payload, sizeof(payload));
+  action.payloadLen = sizeof(payload);
+    
+  Nuki::CmdResult result = executeAction(action);
+  return result;
+}
+
 Nuki::CmdResult NukiBle::updateKeypadEntry(UpdatedKeypadEntry updatedKeyPadEntry) {
   //TODO verify data validity
   NukiLock::Action action;
@@ -664,6 +696,15 @@ Nuki::CmdResult NukiBle::updateKeypadEntry(UpdatedKeypadEntry updatedKeyPadEntry
     }
   }
   return result;
+}
+
+void NukiBle::getFingerprintEntries(std::list<FingerprintEntry>* requestedFingerprintEntries) {
+  requestedFingerprintEntries->clear();
+  std::list<FingerprintEntry>::iterator it = listOfFingerprintEntries.begin();
+  while (it != listOfFingerprintEntries.end()) {
+    requestedFingerprintEntries->push_back(*it);
+    it++;
+  }
 }
 
 void NukiBle::getKeypadEntries(std::list<KeypadEntry>* requestedKeypadCodes) {
@@ -688,6 +729,17 @@ CmdResult NukiBle::deleteKeypadEntry(uint16_t id) {
   action.command = Command::RemoveKeypadCode;
   memcpy(action.payload, &payload, sizeof(payload));
   action.payloadLen = sizeof(payload);
+
+  return executeAction(action);
+}
+
+Nuki::CmdResult NukiBle::retrieveFingerprintEntries() {
+  NukiLock::Action action;
+
+  action.cmdType = Nuki::CommandType::CommandWithChallengeAndPin;
+  action.command = Command::RequestFingerprintEntries;
+
+  listOfFingerprintEntries.clear();
 
   return executeAction(action);
 }
@@ -1556,7 +1608,6 @@ void NukiBle::handleReturnMessage(Command returnCode, unsigned char* data, uint1
       }
       break;
     }
-
     case Command::Status : {
       printBuffer((uint8_t*)data, dataLen, false, "status", debugNukiHexData);
       receivedStatus = data[0];
@@ -1574,7 +1625,6 @@ void NukiBle::handleReturnMessage(Command returnCode, unsigned char* data, uint1
       ESP_LOGW("NukiBle", "NOT IMPLEMENTED ONLY FOR NUKI v1"); //command is not available on Nuki v2 (only on Nuki v1)
       break;
     }
-
     case Command::ErrorReport : {
       ESP_LOGE("NukiBle", "Error: %02x for command: %02x:%02x", data[0], data[2], data[1]);
       memcpy(&errorCode, &data[0], sizeof(errorCode));
@@ -1633,6 +1683,17 @@ void NukiBle::handleReturnMessage(Command returnCode, unsigned char* data, uint1
         ESP_LOGD("NukiBle", "keyPadCodeCount: %d", count);
       }
 
+      break;
+    }
+    case Command::FingerprintEntry : {
+      FingerprintEntry fingerprintEntry;
+      memcpy(&fingerprintEntry, data, dataLen);
+      listOfFingerprintEntries.push_back(fingerprintEntry);
+
+      printBuffer((byte*)data, dataLen, false, "fingerprintEntry", debugNukiHexData, logger);
+      if (debugNukiReadableData) {
+        NukiLock::logFingerprintEntry(fingerprintEntry, true, logger);
+      }
       break;
     }
     case Command::KeypadCode : {

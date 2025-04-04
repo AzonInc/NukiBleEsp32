@@ -187,12 +187,25 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
     void getKeypadEntries(std::list<KeypadEntry>* requestedKeyPadEntries);
 
     /**
+     * @brief Request the lock via BLE to send the existing fingerprint entries
+     *
+     */
+    Nuki::CmdResult retrieveFingerprintEntries();
+    
+    /**
+     * @brief Get the Fingerprint Entries stored on the esp (after executing retrieveFingerprintEntries)
+     *
+     * @param requestedFingerprintEntries list to store the returned Fingerprint entries
+     */
+    void getFingerprintEntries(std::list<FingerprintEntry>* requestedFingerprintEntries);    
+
+    /**
     * @brief Delete a Keypad Entry
     *
     * @param id Id to be deleted
     */
     Nuki::CmdResult deleteKeypadEntry(uint16_t id);
-
+    
     /**
      * @brief Request the lock via BLE to send the existing authorizationentries
      *
@@ -239,6 +252,20 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
      *
      */
     Nuki::CmdResult requestReboot();
+    
+    /**
+     * @brief Sends a custom command to the lock via BLE
+     *
+     * @param command Nuki command to execute
+     * @param withPin Set to true when using challenge and pin command
+     */
+    Nuki::CmdResult genericCommand(Command command, bool withPin = true);
+
+    /**
+     * @brief Sends a request for daily statistics to the lock via BLE
+     *
+     */
+    Nuki::CmdResult requestDailyStatistics();
 
     /**
      * @brief Sends the time to be set to the lock via BLE
@@ -522,9 +549,9 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
     std::atomic_llong lastReceivedBeaconTs;
 
     std::list<KeypadEntry> listOfKeyPadEntries;
+    std::list<FingerprintEntry> listOfFingerprintEntries;
     std::list<AuthorizationEntry> listOfAuthorizationEntries;
     AuthorizationIdType authorizationIdType = AuthorizationIdType::Bridge;
-
 };
 
 } // namespace Nuki
