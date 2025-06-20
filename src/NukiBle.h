@@ -31,7 +31,7 @@
 #include <string>
 
 #define GENERAL_TIMEOUT 3000
-#define CMD_TIMEOUT 10000
+#define CMD_TIMEOUT 3000
 #define PAIRING_TIMEOUT 30000
 #define HEARTBEAT_TIMEOUT 30000
 
@@ -447,17 +447,8 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
     bool debugNukiCommand = false;
 
   private:
-    #ifndef NUKI_MUTEX_RECURSIVE
-    SemaphoreHandle_t nukiBleSemaphore = xSemaphoreCreateMutex();
-    #else
-    SemaphoreHandle_t nukiBleSemaphore = xSemaphoreCreateRecursiveMutex();
-    #endif
-    bool takeNukiBleSemaphore(std::string taker);
-    std::string owner = "free";
-    void giveNukiBleSemaphore();
-
-    bool altConnect = false;
     bool connecting = false;
+    bool disconnecting = false;
     bool statusUpdated = false;
     bool refreshServices = false;
     bool smartLockUltra = false;
@@ -479,6 +470,8 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
     bool sendPlainMessage(Command commandIdentifier, const unsigned char* payload, const uint8_t payloadLen);
     bool sendEncryptedMessage(Command commandIdentifier, const unsigned char* payload, const uint8_t payloadLen);
 
+    NimBLERemoteCharacteristic::notify_callback callback;
+
     void notifyCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* pData, size_t length, bool isNotify);
     void saveCredentials();
     bool retrieveCredentials();
@@ -495,17 +488,17 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
     uint32_t deviceId;            //The ID of the Nuki App, Nuki Bridge or Nuki Fob to be authorized.
     BLEClient* pClient = nullptr;
 
-//Keyturner Pairing Service
+    //Keyturner Pairing Service
     const NimBLEUUID pairingServiceUUID;
-//Keyturner Pairing Service Ultra
+    //Keyturner Pairing Service Ultra
     const NimBLEUUID pairingServiceUltraUUID;
-//Keyturner Service
+    //Keyturner Service
     const NimBLEUUID deviceServiceUUID;
-//Keyturner pairing Data Input Output characteristic
+    //Keyturner pairing Data Input Output characteristic
     const NimBLEUUID gdioUUID;
-//Keyturner pairing Data Input Output characteristic Ultra
+    //Keyturner pairing Data Input Output characteristic Ultra
     const NimBLEUUID gdioUltraUUID;
-//User-Specific Data Input Output characteristic
+    //User-Specific Data Input Output characteristic
     const NimBLEUUID userDataUUID;
 
     const std::string preferencesId;
