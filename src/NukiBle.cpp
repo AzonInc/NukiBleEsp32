@@ -874,7 +874,7 @@ void NukiBle::saveCredentials() {
       printBuffer(authorizationId, sizeof(authorizationId), false, AUTH_ID_STORE_NAME, debugNukiHexData);
 
       if (isLockUltra()) {
-        ESP_LOGD("NukiBle", "pincode: %d", ultraPinCode);
+        ESP_LOGD("NukiBle", "pincode: %d", (unsigned int)ultraPinCode);
       } else {
         ESP_LOGD("NukiBle", "pincode: %d", pinCode);
       }
@@ -904,7 +904,7 @@ void NukiBle::getMacAddress(char* macAddress) {
   unsigned char buf[6];
   if ((preferences.getBytes(BLE_ADDRESS_STORE_NAME, buf, 6) > 0)) {
     BLEAddress address = BLEAddress(buf, 0);
-    sprintf(macAddress, "%d", address.toString().c_str());
+    sprintf(macAddress, "%s", address.toString().c_str());
   }
 }
 
@@ -1381,11 +1381,8 @@ bool NukiBle::registerOnUsdioChar() {
 void NukiBle::notifyCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic, uint8_t* recData, size_t length, bool isNotify) {
   vTaskDelay(pdMS_TO_TICKS(100));
 
-  #ifndef NUKI_64BIT_TIME
-  lastHeartbeat = millis();
-  #else
   lastHeartbeat = (esp_timer_get_time() / 1000);
-  #endif
+
   if (debugNukiCommunication) {
     ESP_LOGD("NukiBle", "Notify callback for characteristic: %s of length: %d", pBLERemoteCharacteristic->getUUID().toString().c_str(), length);
   }
@@ -1572,9 +1569,9 @@ void NukiBle::handleReturnMessage(Command returnCode, unsigned char* data, uint1
       memcpy(&fingerprintEntry, data, dataLen);
       listOfFingerprintEntries.push_back(fingerprintEntry);
 
-      printBuffer((byte*)data, dataLen, false, "fingerprintEntry", debugNukiHexData, logger);
+      printBuffer((uint8_t*)data, dataLen, false, "fingerprintEntry", debugNukiHexData);
       if (debugNukiReadableData) {
-        NukiLock::logFingerprintEntry(fingerprintEntry, true, logger);
+        NukiLock::logFingerprintEntry(fingerprintEntry, true);
       }
       break;
     }

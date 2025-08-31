@@ -876,7 +876,17 @@ void logGeneralStatistics(GeneralStatistics generalStatistics, bool debug) {
 
 void logInternalLogEntry(InternalLogEntry internalLogEntry, bool debug) {
   if (debug) {
-    ESP_LOGD("NukiBle.NukiLock", "[%d] type:%d authId:%d %d-%d-%d %d:%d:%d ", internalLogEntry.index, internalLogEntry.loggingType, internalLogEntry.authId, internalLogEntry.timeStampYear, internalLogEntry.timeStampMonth, internalLogEntry.timeStampDay, internalLogEntry.timeStampHour, internalLogEntry.timeStampMinute, internalLogEntry.timeStampSecond);
+    ESP_LOGD("NukiBle.NukiLock", "[%d] type: %d authId: %d %d-%d-%d %d:%d:%d",
+      (unsigned int)internalLogEntry.index,
+      (unsigned int)internalLogEntry.loggingType,
+      (unsigned int)internalLogEntry.authId,
+      internalLogEntry.timeStampYear,
+      internalLogEntry.timeStampMonth,
+      internalLogEntry.timeStampDay,
+      internalLogEntry.timeStampHour,
+      internalLogEntry.timeStampMinute,
+      internalLogEntry.timeStampSecond
+    );
     ESP_LOGD("NukiBle.NukiLock", "data: %d", (unsigned int)internalLogEntry.data);
   }
 }
