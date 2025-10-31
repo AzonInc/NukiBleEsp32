@@ -91,7 +91,7 @@ Nuki::CmdResult NukiBle::cmdStateMachine(const TDeviceAction action) {
       break;
     }
     case CommandState::CmdSent: {
-      if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
+      if ((esp_timer_get_time() / 1000) - timeNow > commandTimeoutDuration) {
         logMessage("************************ COMMAND FAILED TIMEOUT************************", 2);
         disconnect();
         nukiCommandState = CommandState::Idle;
@@ -161,7 +161,7 @@ Nuki::CmdResult NukiBle::cmdChallStateMachine(const TDeviceAction action, const 
       if (debugNukiCommunication) {
         logMessage("************************ RECEIVING CHALLENGE RESPONSE************************");
       }
-      if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
+      if ((esp_timer_get_time() / 1000) - timeNow > commandTimeoutDuration) {
         logMessage("************************ COMMAND FAILED TIMEOUT ************************", 2);
         disconnect();
         nukiCommandState = CommandState::Idle;
@@ -216,7 +216,7 @@ Nuki::CmdResult NukiBle::cmdChallStateMachine(const TDeviceAction action, const 
       if (debugNukiCommunication) {
         logMessage("************************ RECEIVING DATA ************************");
       }
-      if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
+      if ((esp_timer_get_time() / 1000) - timeNow > commandTimeoutDuration) {
         logMessage("************************ COMMAND FAILED TIMEOUT ************************", 2);
         disconnect();
         nukiCommandState = CommandState::Idle;
@@ -284,7 +284,7 @@ Nuki::CmdResult NukiBle::cmdChallAccStateMachine(const TDeviceAction action) {
       if (debugNukiCommunication) {
         logMessage("************************ RECEIVING CHALLENGE RESPONSE************************");
       }
-      if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
+      if ((esp_timer_get_time() / 1000) - timeNow > commandTimeoutDuration) {
         logMessage("************************ COMMAND FAILED TIMEOUT ************************", 2);
         disconnect();
         nukiCommandState = CommandState::Idle;
@@ -324,7 +324,7 @@ Nuki::CmdResult NukiBle::cmdChallAccStateMachine(const TDeviceAction action) {
       if (debugNukiCommunication) {
         logMessage("************************ RECEIVING ACCEPT ************************");
       }
-      if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
+      if ((esp_timer_get_time() / 1000) - timeNow > commandTimeoutDuration) {
         logMessage("************************ ACCEPT FAILED TIMEOUT ************************", 2);
         disconnect();
         nukiCommandState = CommandState::Idle;
@@ -348,7 +348,7 @@ Nuki::CmdResult NukiBle::cmdChallAccStateMachine(const TDeviceAction action) {
       if (debugNukiCommunication) {
         logMessage("************************ RECEIVING COMPLETE ************************");
       }
-      if ((esp_timer_get_time() / 1000) - timeNow > CMD_TIMEOUT) {
+      if ((esp_timer_get_time() / 1000) - timeNow > commandTimeoutDuration) {
         logMessage("************************ COMMAND FAILED TIMEOUT ************************", 2);
         disconnect();
         nukiCommandState = CommandState::Idle;
