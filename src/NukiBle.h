@@ -336,7 +336,7 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
      * creates the BLE client, sets the BLE callback and checks if the lock is paired
      * (if credentials are stored in preferences)
      */
-    void initialize(bool initAltConnect = false);
+    void initialize();
 
     /**
      * @brief the transmission power.

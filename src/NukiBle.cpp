@@ -81,7 +81,7 @@ NukiBle::~NukiBle() {
   }
 }
 
-void NukiBle::initialize(bool initAltConnect) {
+void NukiBle::initialize() {
   preferences.begin(preferencesId.c_str(), false);
   if (!NimBLEDevice::isInitialized())
   {
