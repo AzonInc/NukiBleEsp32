@@ -5,20 +5,17 @@ description: "NukiBleEsp32"
 url: "https://github.com/AzonInc/NukiBleEsp32"
 repository: "https://github.com/AzonInc/NukiBleEsp32"
 dependencies:
-  crc16:
-    git: https://github.com/AzonInc/Crc16.git
+  idf: ">=5.5"
 
   esp-nimble-cpp:
     git: https://github.com/h2zero/esp-nimble-cpp.git
     version: "2.3.3"
 
-  ble-scanner:
-    git: https://github.com/AzonInc/ble-scanner.git
-    version: "2.0.0"
-    
   espressif/libsodium: "^1.0.20~2"
 
-  idf:
-    version: ">=5.4.0"
-    rules:
-      - if: "target in [esp32p4]"
+  crc16:
+    git: https://github.com/AzonInc/Crc16.git
+
+  ble-scanner:
+    git: https://github.com/AzonInc/ble-scanner.git
+    version: "2.1.0"
