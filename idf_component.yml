@@ -10,7 +10,7 @@ dependencies:
 
   esp-nimble-cpp:
     git: https://github.com/h2zero/esp-nimble-cpp.git
-    version: 8af38e7eb9ae779bf54708c029f33a875d5e8d62
+    version: "2.3.3"
 
   ble-scanner:
     git: https://github.com/AzonInc/ble-scanner.git
