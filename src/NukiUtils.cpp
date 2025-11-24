@@ -66,7 +66,7 @@ int encode(unsigned char* output, unsigned char* input, unsigned long long len, 
   int result = crypto_secretbox_easy(output, input, len, nonce, keyS);
 
   if (result) {
-    ESP_LOGD("NukiBle", "Encryption failed (length %llu, given result %i)\n", len, result);
+    ESP_LOGI("NukiBle", "Encryption failed (length %llu, given result %i)\n", len, result);
     return -1;
   }
   return len;
@@ -106,7 +106,7 @@ bool crcValid(uint8_t* pData, uint16_t length, bool debug) {
     return false;
   }
   if (debug) {
-    ESP_LOGD("NukiBle", "CRC CHECK OK");
+    ESP_LOGI("NukiBle", "CRC CHECK OK");
   }
   return true;
 }

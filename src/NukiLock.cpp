@@ -599,7 +599,7 @@ Nuki::CmdResult NukiLock::addTimeControlEntry(NewTimeControlEntry newTimeControl
   Nuki::CmdResult result = executeAction(action);
   if (result == Nuki::CmdResult::Success) {
     if (debugNukiReadableData) {      
-      ESP_LOGD("NukiBle.NukiLock", "addTimeControlEntry, payloadlen: %d", sizeof(NewTimeControlEntry));
+      ESP_LOGI("NukiBle.NukiLock", "addTimeControlEntry, payloadlen: %d", sizeof(NewTimeControlEntry));
       printBuffer(action.payload, sizeof(NewTimeControlEntry), false, "new time control content: ", debugNukiHexData);
       logNewTimeControlEntry(newTimeControlEntry, true);
     }
@@ -621,7 +621,7 @@ Nuki::CmdResult NukiLock::updateTimeControlEntry(TimeControlEntry TimeControlEnt
   Nuki::CmdResult result = executeAction(action);
   if (result == Nuki::CmdResult::Success) {
     if (debugNukiReadableData) {      
-      ESP_LOGD("NukiBle.NukiLock", "addTimeControlEntry, payloadlen: %d", sizeof(TimeControlEntry));
+      ESP_LOGI("NukiBle.NukiLock", "addTimeControlEntry, payloadlen: %d", sizeof(TimeControlEntry));
       printBuffer(action.payload, sizeof(TimeControlEntry), false, "updated time control content: ", debugNukiHexData);
       logTimeControlEntry(TimeControlEntry, true);
     }

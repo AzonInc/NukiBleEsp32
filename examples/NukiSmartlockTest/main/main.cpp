@@ -49,9 +49,9 @@ void addKeypadEntry() {
 void batteryReport() {
     uint8_t result = nukiLock.requestBatteryReport(&_batteryReport);
     if (result == 1) {
-        ESP_LOGD("Nuki", "Bat report voltage: %d Crit state: %d, start temp: %d", _batteryReport.batteryVoltage, _batteryReport.criticalBatteryState, _batteryReport.startTemperature);
+        ESP_LOGI("Nuki", "Bat report voltage: %d Crit state: %d, start temp: %d", _batteryReport.batteryVoltage, _batteryReport.criticalBatteryState, _batteryReport.startTemperature);
     } else {
-        ESP_LOGD("Nuki", "Bat report failed: %d", result);
+        ESP_LOGI("Nuki", "Bat report failed: %d", result);
     }
 }
     
@@ -62,11 +62,11 @@ bool keyTurnerState() {
         char current_lock_state_as_string[30] = {0};
         NukiLock::lockstateToString(retrievedKeyTurnerState.lockState, current_lock_state_as_string);
 
-        ESP_LOGD("Nuki", "Bat crit: %d, Bat perc: %d lock state: %s %d:%d:%d",
+        ESP_LOGI("Nuki", "Bat crit: %d, Bat perc: %d lock state: %s %d:%d:%d",
             nukiLock.isBatteryCritical(), nukiLock.getBatteryPerc(), current_lock_state_as_string, retrievedKeyTurnerState.currentTimeHour,
             retrievedKeyTurnerState.currentTimeMinute, retrievedKeyTurnerState.currentTimeSecond);
     } else {
-        ESP_LOGD("Nuki", "cmd failed: %u", result);
+        ESP_LOGI("Nuki", "cmd failed: %u", result);
     }
     return result;
 }
@@ -78,11 +78,11 @@ void requestLogEntries() {
         nukiLock.getLogEntries(&requestedLogEntries);
         std::list<NukiLock::LogEntry>::iterator it = requestedLogEntries.begin();
         while (it != requestedLogEntries.end()) {
-            ESP_LOGD("Nuki", "Log[%lu] %u-%u-%u %u:%u:%u", it->index, it->timeStampYear, it->timeStampMonth, it->timeStampDay, it->timeStampHour, it->timeStampMinute, it->timeStampSecond);
+            ESP_LOGI("Nuki", "Log[%lu] %u-%u-%u %u:%u:%u", it->index, it->timeStampYear, it->timeStampMonth, it->timeStampDay, it->timeStampHour, it->timeStampMinute, it->timeStampSecond);
             it++;
         }
     } else {
-        ESP_LOGD("Nuki", "get log failed: %u", result);
+        ESP_LOGI("Nuki", "get log failed: %u", result);
     }
 }
     
@@ -93,11 +93,11 @@ void requestKeyPadEntries() {
         nukiLock.getKeypadEntries(&requestedKeypadEntries);
         std::list<Nuki::KeypadEntry>::iterator it = requestedKeypadEntries.begin();
         while (it != requestedKeypadEntries.end()) {
-            ESP_LOGD("Nuki", "Keypad entry[%u] %lu", it->codeId, it->code);
+            ESP_LOGI("Nuki", "Keypad entry[%u] %lu", it->codeId, it->code);
             it++;
         }
     } else {
-        ESP_LOGD("Nuki", "get keypadentries failed: %u", result);
+        ESP_LOGI("Nuki", "get keypadentries failed: %u", result);
     }
 }
     
@@ -108,21 +108,21 @@ void requestAuthorizationEntries() {
         nukiLock.getAuthorizationEntries(&requestedAuthorizationEntries);
         std::list<Nuki::AuthorizationEntry>::iterator it = requestedAuthorizationEntries.begin();
         while (it != requestedAuthorizationEntries.end()) {
-            ESP_LOGD("Nuki", "Authorization entry[%lu] type: %u name: %s", it->authId, it->idType, it->name);
+            ESP_LOGI("Nuki", "Authorization entry[%lu] type: %u name: %s", it->authId, it->idType, it->name);
             it++;
         }
     } else {
-        ESP_LOGD("Nuki", "get authorization entries failed: %u", result);
+        ESP_LOGI("Nuki", "get authorization entries failed: %u", result);
     }
 }
     
 void setPincode(uint16_t pincode) {
     uint8_t result = nukiLock.setSecurityPin(pincode);
     if (result == 1) {
-        ESP_LOGD("Nuki", "Set pincode done");
+        ESP_LOGI("Nuki", "Set pincode done");
     
     } else {
-        ESP_LOGD("Nuki", "Set pincode failed: %u", result);
+        ESP_LOGI("Nuki", "Set pincode failed: %u", result);
     }
 }
 
@@ -147,18 +147,18 @@ void requestTimeControlEntries() {
             char lock_action_as_string[30] = {0};
             NukiLock::lockactionToString(it->lockAction, lock_action_as_string);
 
-            ESP_LOGD("Nuki", "TimeEntry[%u] weekdays:%d %d:%d enabled: %d lock action: %s", it->entryId, it->weekdays, it->timeHour, it->timeMin, it->enabled, lock_action_as_string);
+            ESP_LOGI("Nuki", "TimeEntry[%u] weekdays:%d %d:%d enabled: %d lock action: %s", it->entryId, it->weekdays, it->timeHour, it->timeMin, it->enabled, lock_action_as_string);
             it++;
         }
     } else {
-        ESP_LOGD("Nuki", "get log failed: %u, error %d", result, static_cast<int>(nukiLock.getLastError()));
+        ESP_LOGI("Nuki", "get log failed: %u, error %d", result, static_cast<int>(nukiLock.getLastError()));
     }
 }
     
 void getConfig() {
     NukiLock::Config config;
     if (nukiLock.requestConfig(&config) == 1) {
-        ESP_LOGD("Nuki", "Name: %s", config.name);
+        ESP_LOGI("Nuki", "Name: %s", config.name);
     } else {
         ESP_LOGW("Nuki", "getConfig failed");
     }
@@ -177,13 +177,13 @@ class Handler: public Nuki::SmartlockEventHandler {
 Handler handler;
     
 extern "C" void app_main() {
-    ESP_LOGD("Nuki", "Starting NUKI BLE...");
+    ESP_LOGI("Nuki", "Starting NUKI BLE...");
     scanner.initialize();
     nukiLock.registerBleScanner(&scanner);
     nukiLock.initialize();
 
     if (nukiLock.isPairedWithLock()) {
-        ESP_LOGD("Nuki", "paired");
+        ESP_LOGI("Nuki", "paired");
         nukiLock.setEventHandler(&handler);
         getConfig();
         nukiLock.enableLedFlash(false);
@@ -196,7 +196,7 @@ extern "C" void app_main() {
         scanner.update();
         if (!nukiLock.isPairedWithLock()) {
             if (nukiLock.pairNuki() == Nuki::PairingResult::Success) {
-                ESP_LOGD("Nuki", "paired");
+                ESP_LOGI("Nuki", "paired");
                 nukiLock.setEventHandler(&handler);
                 getConfig();
             }
