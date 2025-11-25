@@ -855,7 +855,10 @@ void NukiBle::saveCredentials() {
   currentBleAddress[3] = bleAddress.getVal()[2];
   currentBleAddress[4] = bleAddress.getVal()[1];
   currentBleAddress[5] = bleAddress.getVal()[0];
-  preferences.getBytes(BLE_ADDRESS_STORE_NAME, storedBleAddress, 6);
+
+  if (preferences.isKey(BLE_ADDRESS_STORE_NAME)) {
+    preferences.getBytes(BLE_ADDRESS_STORE_NAME, storedBleAddress, 6);
+  }
 
   preferences.putBool(ULTRA_STORE_NAME, isLockUltra());
 
@@ -894,7 +897,8 @@ void NukiBle::saveCredentials() {
 
 uint16_t NukiBle::getSecurityPincode() {
   uint16_t storedPincode = 0000;
-  if ((preferences.getBytes(SECURITY_PINCODE_STORE_NAME, &storedPincode, 2) > 0)) {
+  if (preferences.isKey(SECURITY_PINCODE_STORE_NAME) 
+      && (preferences.getBytes(SECURITY_PINCODE_STORE_NAME, &storedPincode, 2) > 0)) {
     return storedPincode;
   }
   return 0;
@@ -902,7 +906,8 @@ uint16_t NukiBle::getSecurityPincode() {
 
 uint32_t NukiBle::getUltraPincode() {
   uint32_t storedPincode = 000000;
-  if ((preferences.getBytes(ULTRA_PINCODE_STORE_NAME, &storedPincode, 4) > 0)) {
+  if (preferences.isKey(ULTRA_PINCODE_STORE_NAME) 
+      && (preferences.getBytes(ULTRA_PINCODE_STORE_NAME, &storedPincode, 4) > 0)) {
     return storedPincode;
   }
   return 0;
@@ -910,7 +915,7 @@ uint32_t NukiBle::getUltraPincode() {
 
 void NukiBle::getMacAddress(char* macAddress) {
   unsigned char buf[6];
-  if ((preferences.getBytes(BLE_ADDRESS_STORE_NAME, buf, 6) > 0)) {
+  if (preferences.isKey(BLE_ADDRESS_STORE_NAME) && preferences.getBytes(BLE_ADDRESS_STORE_NAME, buf, 6) > 0) {
     BLEAddress address = BLEAddress(buf, 0);
     sprintf(macAddress, "%s", address.toString().c_str());
   }
@@ -920,14 +925,17 @@ bool NukiBle::retrieveCredentials() {
   //TODO check on empty (invalid) credentials?
   unsigned char buff[6];
 
-  if ((preferences.getBytes(BLE_ADDRESS_STORE_NAME, buff, 6) > 0)
-      && (preferences.getBytes(SECRET_KEY_STORE_NAME, secretKeyK, 32) > 0)
-      && (preferences.getBytes(AUTH_ID_STORE_NAME, authorizationId, 4) > 0)
-     ) {
+  if (preferences.isKey(BLE_ADDRESS_STORE_NAME) 
+    && preferences.isKey(SECRET_KEY_STORE_NAME) 
+    && preferences.isKey(AUTH_ID_STORE_NAME)
+    && (preferences.getBytes(BLE_ADDRESS_STORE_NAME, buff, 6) > 0)
+    && (preferences.getBytes(SECRET_KEY_STORE_NAME, secretKeyK, 32) > 0)
+    && (preferences.getBytes(AUTH_ID_STORE_NAME, authorizationId, 4) > 0)
+   ) {
     bleAddress = BLEAddress(buff, 0);
 
     if (debugNukiConnect) {
-      ESP_LOGD("NukiBle", "[%s] Credentials retrieved :", deviceName.c_str());
+      ESP_LOGI("NukiBle", "[%s] Credentials retrieved:", deviceName.c_str());
       printBuffer(secretKeyK, sizeof(secretKeyK), false, SECRET_KEY_STORE_NAME, debugNukiHexData);
       ESP_LOGD("NukiBle", "bleAddress: %s", bleAddress.toString().c_str());
       printBuffer(authorizationId, sizeof(authorizationId), false, AUTH_ID_STORE_NAME, debugNukiHexData);
@@ -950,11 +958,11 @@ bool NukiBle::retrieveCredentials() {
       preferences.getBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2);
 
       if (pinCode == 0) {
-        ESP_LOGW("NukiBle", "Pincode is 000000, probably not defined");
+        ESP_LOGW("NukiBle", "Pincode is 0000, probably not defined");
       }
     }
   } else {
-    ESP_LOGE("NukiBle", "Not paired");
+    ESP_LOGE("NukiBle", "No credentials found - not paired yet!");
     return false;
   }
   return true;
