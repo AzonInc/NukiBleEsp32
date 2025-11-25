@@ -871,16 +871,16 @@ void NukiBle::saveCredentials() {
 
   if (isLockUltra()) {
     preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &ultraPinCode, 4);
-    ESP_LOGI("NukiBle", "DEBUG: putBytes ULTRA_PINCODE_STORE_NAME");
+    ESP_LOGI("NukiBle", "DEBUG: putBytes ULTRA_PINCODE_STORE_NAME ultraPinCode %d", ultraPinCode);
   } else {
     if (compareCharArray(currentBleAddress, storedBleAddress, 6)) {
       //only store earlier retreived pin code if address is the same
       //otherwise it is a different/new lock
       preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2);
-      ESP_LOGI("NukiBle", "DEBUG: putBytes SECURITY_PINCODE_STORE_NAME");
+      ESP_LOGI("NukiBle", "DEBUG: putBytes SECURITY_PINCODE_STORE_NAME pinCode %d", pinCode);
     } else {
       preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &defaultPincode, 2);
-      ESP_LOGI("NukiBle", "DEBUG: putBytes SECURITY_PINCODE_STORE_NAME");
+      ESP_LOGI("NukiBle", "DEBUG: putBytes SECURITY_PINCODE_STORE_NAME defaultPincode %d", defaultPincode);
     }
   }
 
