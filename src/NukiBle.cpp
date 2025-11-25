@@ -823,21 +823,26 @@ Nuki::CmdResult NukiBle::updateTime(TimeValue time) {
 }
 
 bool NukiBle::saveSecurityPincode(const uint16_t pinCode) {
+  ESP_LOGI("NukiBle", "DEBUG: saveSecurityPincode: %d", pinCode);
   if (preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2) == 2) {
     this->pinCode = pinCode;
     return true;
   }
+  ESP_LOGI("NukiBle", "DEBUG: saveSecurityPincode failed");
   return false;
 }
 
 bool NukiBle::saveUltraPincode(const uint32_t pinCode, bool save) {
+  ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode: %d", pinCode);
   if (sizeof(pinCode) == 4) {
     if (save) {
+      ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode save");
       preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &pinCode, 4);
     }
     this->ultraPinCode = pinCode;
     return true;
   }
+  ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode failed");
   return false;
 }
 
@@ -857,16 +862,25 @@ void NukiBle::saveCredentials() {
   }
 
   preferences.putBool(ULTRA_STORE_NAME, isLockUltra());
+  if(isLockUltra()) {
+    ESP_LOGI("NukiBle", "putBool ULTRA_STORE_NAME true");
+  } else {
+    ESP_LOGI("NukiBle", "putBool ULTRA_STORE_NAME false");
+  }
+
 
   if (isLockUltra()) {
     preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &ultraPinCode, 4);
+    ESP_LOGI("NukiBle", "DEBUG: putBytes ULTRA_PINCODE_STORE_NAME");
   } else {
     if (compareCharArray(currentBleAddress, storedBleAddress, 6)) {
       //only store earlier retreived pin code if address is the same
       //otherwise it is a different/new lock
       preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2);
+      ESP_LOGI("NukiBle", "DEBUG: putBytes SECURITY_PINCODE_STORE_NAME");
     } else {
       preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &defaultPincode, 2);
+      ESP_LOGI("NukiBle", "DEBUG: putBytes SECURITY_PINCODE_STORE_NAME");
     }
   }
 
@@ -881,9 +895,9 @@ void NukiBle::saveCredentials() {
       printBuffer(authorizationId, sizeof(authorizationId), false, AUTH_ID_STORE_NAME, debugNukiHexData);
 
       if (isLockUltra()) {
-        ESP_LOGI("NukiBle", "pincode: %d", (unsigned int)ultraPinCode);
+        ESP_LOGI("NukiBle", "DEBUG: pincode ultra: %d", (unsigned int)ultraPinCode);
       } else {
-        ESP_LOGI("NukiBle", "pincode: %d", pinCode);
+        ESP_LOGI("NukiBle", "DEBUG: pincode normal: %d", pinCode);
       }
     }
   } else {
@@ -893,8 +907,12 @@ void NukiBle::saveCredentials() {
 
 uint16_t NukiBle::getSecurityPincode() {
   uint16_t storedPincode = 0000;
+
+  ESP_LOGI("NukiBle", "DEBUG: getSecurityPincode");
+
   if (preferences.isKey(SECURITY_PINCODE_STORE_NAME) 
       && (preferences.getBytes(SECURITY_PINCODE_STORE_NAME, &storedPincode, 2) > 0)) {
+        ESP_LOGI("NukiBle", "DEBUG: getSecurityPincode %d", storedPincode);
     return storedPincode;
   }
   return 0;
@@ -904,6 +922,7 @@ uint32_t NukiBle::getUltraPincode() {
   uint32_t storedPincode = 000000;
   if (preferences.isKey(ULTRA_PINCODE_STORE_NAME) 
       && (preferences.getBytes(ULTRA_PINCODE_STORE_NAME, &storedPincode, 4) > 0)) {
+        ESP_LOGI("NukiBle", "DEBUG: getUltraPincode %d", storedPincode);
     return storedPincode;
   }
   return 0;
@@ -947,11 +966,15 @@ bool NukiBle::retrieveCredentials() {
     if (isLockUltra()) {
       preferences.getBytes(ULTRA_PINCODE_STORE_NAME, &ultraPinCode, 4);
 
+      ESP_LOGI("NukiBle", "DEBUG: getBytes ULTRA_PINCODE_STORE_NAME %d", ultraPinCode);
+
       if (ultraPinCode == 0) {
         ESP_LOGW("NukiBle", "Pincode is 000000, probably not defined");
       }
     } else {
       preferences.getBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2);
+
+      ESP_LOGI("NukiBle", "DEBUG: getBytes SECURITY_PINCODE_STORE_NAME %d", pinCode);
 
       if (pinCode == 0) {
         ESP_LOGW("NukiBle", "Pincode is 0000, probably not defined");
