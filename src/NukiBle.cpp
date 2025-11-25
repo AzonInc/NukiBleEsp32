@@ -1078,7 +1078,7 @@ PairingState NukiBle::pairStateMachine(const PairingState nukiPairingState) {
           memcpy(&authorizationDataMessage[4], authorizationDataName, sizeof(authorizationDataName));
           memcpy(&authorizationDataMessage[36], &ultraPinCode, 4);
 
-          ESP_LOGI("NukiBle", "##################### AUTH %d (ULTRA) ####################", ultraPinCode);
+          ESP_LOGI("NukiBle", "##################### AUTH %i (ULTRA) ####################", ultraPinCode);
 
           encryptPairing = true;
           sendEncryptedMessage(Command::AuthorizationData, authorizationDataMessage, sizeof(authorizationDataMessage));
@@ -1116,6 +1116,8 @@ PairingState NukiBle::pairStateMachine(const PairingState nukiPairingState) {
           memcpy(&authorizationDataMessage[33], authorizationDataId, sizeof(authorizationDataId));
           memcpy(&authorizationDataMessage[37], authorizationDataName, sizeof(authorizationDataName));
           memcpy(&authorizationDataMessage[69], authorizationDataNonce, sizeof(authorizationDataNonce));
+
+          ESP_LOGI("NukiBle", "##################### AUTH %i (REGULAR) ####################", pinCode);
 
           memset(challengeNonceK, 0, sizeof(challengeNonceK));
           sendPlainMessage(Command::AuthorizationData, authorizationDataMessage, sizeof(authorizationDataMessage));
