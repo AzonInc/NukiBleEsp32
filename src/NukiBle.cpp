@@ -750,6 +750,7 @@ Nuki::CmdResult NukiBle::setUltraPin(const uint32_t newSecurityPin) {
 
   Nuki::CmdResult result = executeAction(action);
   if (result == Nuki::CmdResult::Success) {
+    ESP_LOGI("NukiBle", "DEBUG: setUltraPin ultraPinCode: %d", (unsigned int)ultraPinCode);
     ultraPinCode = newSecurityPin;
     saveCredentials();
   }
@@ -825,29 +826,38 @@ Nuki::CmdResult NukiBle::updateTime(TimeValue time) {
 
 bool NukiBle::saveSecurityPincode(const uint16_t pinCode) {
   ESP_LOGI("NukiBle", "DEBUG: saveSecurityPincode: %d", pinCode);
-  if (preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2) == 2) {
+
+  size_t written = preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2);
+
+  if (written == 2) {
     this->pinCode = pinCode;
     return true;
   }
+
   ESP_LOGI("NukiBle", "DEBUG: saveSecurityPincode failed");
   return false;
 }
 
 bool NukiBle::saveUltraPincode(const uint32_t pinCode, bool save) {
   ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode: %d", (unsigned int)pinCode);
-  if (sizeof(pinCode) == 4) {
-    if (save) {
-      ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode save");
-      preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &pinCode, 4);
+
+  if (save) {
+    ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode save");
+
+    size_t written = preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &pinCode, 4);
+    if (written != 4) {
+      ESP_LOGE("NukiBle", "ERROR: saveUltraPincode failed, wrote %d bytes", written);
+      return false;
     }
-    else {
-      ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode nosave, set only");
-    }
-    this->ultraPinCode = pinCode;
-    return true;
+
+  } else {
+    ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode nosave, set only");
   }
-  ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode failed");
-  return false;
+
+  this->ultraPinCode = pinCode;
+
+  ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode this->ultraPinCode = pinCode: %d", (unsigned int)ultraPinCode);
+  return true;
 }
 
 void NukiBle::saveCredentials() {
@@ -1112,7 +1122,7 @@ PairingState NukiBle::pairStateMachine(const PairingState nukiPairingState) {
           memcpy(&authorizationDataMessage[4], authorizationDataName, sizeof(authorizationDataName));
           memcpy(&authorizationDataMessage[36], &ultraPinCode, 4);
 
-          ESP_LOGI("NukiBle", "##################### AUTH %i (ULTRA) ####################", (unsigned int)ultraPinCode);
+          ESP_LOGI("NukiBle", "##################### AUTH %d (ULTRA) ####################", (unsigned int)ultraPinCode);
 
           encryptPairing = true;
           sendEncryptedMessage(Command::AuthorizationData, authorizationDataMessage, sizeof(authorizationDataMessage));
