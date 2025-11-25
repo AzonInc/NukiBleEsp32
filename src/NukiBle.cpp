@@ -454,6 +454,7 @@ void NukiBle::onResult(const BLEAdvertisedDevice* advertisedDevice) {
         if (ultraPinCode == 000000) {
           ESP_LOGI("NukiBle", "No pairing PIN code set, not pairing with Nuki SmartLock Ultra");
         } else {
+          ESP_LOGI("NukiBle", "DEBUG: Pairing PIN code set %d, pairing with Nuki SmartLock Ultra", (unsigned int)ultraPinCode);
           bleAddress = advertisedDevice->getAddress();
           pairingServiceAvailable = true;
           smartLockUltra = true;
@@ -833,7 +834,7 @@ bool NukiBle::saveSecurityPincode(const uint16_t pinCode) {
 }
 
 bool NukiBle::saveUltraPincode(const uint32_t pinCode, bool save) {
-  ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode: %d", pinCode);
+  ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode: %d", (unsigned int)pinCode);
   if (sizeof(pinCode) == 4) {
     if (save) {
       ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode save");
@@ -874,7 +875,7 @@ void NukiBle::saveCredentials() {
 
   if (isLockUltra()) {
     preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &ultraPinCode, 4);
-    ESP_LOGI("NukiBle", "DEBUG: putBytes ULTRA_PINCODE_STORE_NAME ultraPinCode %d", ultraPinCode);
+    ESP_LOGI("NukiBle", "DEBUG: putBytes ULTRA_PINCODE_STORE_NAME ultraPinCode %d", (unsigned int)ultraPinCode);
   } else {
     if (compareCharArray(currentBleAddress, storedBleAddress, 6)) {
       //only store earlier retreived pin code if address is the same
@@ -925,7 +926,7 @@ uint32_t NukiBle::getUltraPincode() {
   uint32_t storedPincode = 000000;
   if (preferences.isKey(ULTRA_PINCODE_STORE_NAME) 
       && (preferences.getBytes(ULTRA_PINCODE_STORE_NAME, &storedPincode, 4) > 0)) {
-        ESP_LOGI("NukiBle", "DEBUG: getUltraPincode %d", storedPincode);
+        ESP_LOGI("NukiBle", "DEBUG: getUltraPincode %d", (unsigned int)storedPincode);
     return storedPincode;
   }
   return 0;
@@ -969,7 +970,7 @@ bool NukiBle::retrieveCredentials() {
     if (isLockUltra()) {
       preferences.getBytes(ULTRA_PINCODE_STORE_NAME, &ultraPinCode, 4);
 
-      ESP_LOGI("NukiBle", "DEBUG: getBytes ULTRA_PINCODE_STORE_NAME %d", ultraPinCode);
+      ESP_LOGI("NukiBle", "DEBUG: getBytes ULTRA_PINCODE_STORE_NAME %d", (unsigned int)ultraPinCode);
 
       if (ultraPinCode == 0) {
         ESP_LOGW("NukiBle", "Pincode is 000000, probably not defined");
@@ -1104,7 +1105,7 @@ PairingState NukiBle::pairStateMachine(const PairingState nukiPairingState) {
           memcpy(&authorizationDataMessage[4], authorizationDataName, sizeof(authorizationDataName));
           memcpy(&authorizationDataMessage[36], &ultraPinCode, 4);
 
-          ESP_LOGI("NukiBle", "##################### AUTH %i (ULTRA) ####################", ultraPinCode);
+          ESP_LOGI("NukiBle", "##################### AUTH %i (ULTRA) ####################", (unsigned int)ultraPinCode);
 
           encryptPairing = true;
           sendEncryptedMessage(Command::AuthorizationData, authorizationDataMessage, sizeof(authorizationDataMessage));
