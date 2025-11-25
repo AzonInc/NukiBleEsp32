@@ -839,6 +839,9 @@ bool NukiBle::saveUltraPincode(const uint32_t pinCode, bool save) {
       ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode save");
       preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &pinCode, 4);
     }
+    else {
+      ESP_LOGI("NukiBle", "DEBUG: saveUltraPincode nosave");
+    }
     this->ultraPinCode = pinCode;
     return true;
   }
