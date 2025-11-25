@@ -827,22 +827,27 @@ Nuki::CmdResult NukiBle::updateTime(TimeValue time) {
 }
 
 bool NukiBle::saveSecurityPincode(const uint16_t pinCode) {
-  if (preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2) == 2) {
-    this->pinCode = pinCode;
-    return true;
+  size_t written = preferences.putBytes(SECURITY_PINCODE_STORE_NAME, &pinCode, 2);
+  if (written != 2) {
+    ESP_LOGE("NukiBle", "ERROR: saveSecurityPincode failed, wrote %d bytes", written);
+    return false;
   }
-  return false;
+
+  this->pinCode = pinCode;
+  return true;
 }
 
 bool NukiBle::saveUltraPincode(const uint32_t pinCode, bool save) {
-  if (sizeof(pinCode) == 4) {
-    if (save) {
-      preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &pinCode, 4);
+  if (save) {
+    size_t written = preferences.putBytes(ULTRA_PINCODE_STORE_NAME, &pinCode, 4);
+    if (written != 4) {
+      ESP_LOGE("NukiBle", "ERROR: saveUltraPincode failed, wrote %d bytes", written);
+      return false;
     }
-    this->ultraPinCode = pinCode;
-    return true;
   }
-  return false;
+
+  this->ultraPinCode = pinCode;
+  return true;
 }
 
 void NukiBle::saveCredentials() {
