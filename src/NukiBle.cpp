@@ -1078,6 +1078,8 @@ PairingState NukiBle::pairStateMachine(const PairingState nukiPairingState) {
           memcpy(&authorizationDataMessage[4], authorizationDataName, sizeof(authorizationDataName));
           memcpy(&authorizationDataMessage[36], &ultraPinCode, 4);
 
+          ESP_LOGI("NukiBle", "##################### AUTH %d (ULTRA) ####################", ultraPinCode);
+
           encryptPairing = true;
           sendEncryptedMessage(Command::AuthorizationData, authorizationDataMessage, sizeof(authorizationDataMessage));
           nukiPairingResultState = PairingState::RecStatus;
