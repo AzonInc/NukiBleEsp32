@@ -14,11 +14,7 @@
 #include "NukiLockUtils.h"
 #include "NukiUtils.h"
 
-#include "sodium/crypto_scalarmult.h"
-#include "sodium/crypto_core_hsalsa20.h"
-#include "sodium/crypto_auth_hmacsha256.h"
-#include "sodium/crypto_secretbox.h"
-#include "sodium/crypto_box.h"
+#include <sodium.h>
 #include "NimBLEBeacon.h"
 
 #include <esp_task_wdt.h>
@@ -166,6 +162,15 @@ PairingResult NukiBle::pairNuki(AuthorizationIdType idType) {
       ESP_LOGD("NukiBle", "Nuki in pairing mode found");
     }
     if (connectBle(bleAddress, true)) {
+
+      int ret = sodium_init();
+      if (ret < 0)
+      {
+        ESP_LOGE("NukiBle", "sodium_init() failed: %d", ret);
+        return PairingResult::Timeout;
+      }
+      ESP_LOGD("NukiBle", "sodium_init() result: %d", ret);
+
       crypto_box_keypair(myPublicKey, myPrivateKey);
 
       PairingState nukiPairingState = PairingState::InitPairing;
