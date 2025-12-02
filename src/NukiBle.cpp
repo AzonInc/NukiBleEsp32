@@ -14,11 +14,7 @@
 #include "NukiLockUtils.h"
 #include "NukiUtils.h"
 
-#include "sodium/crypto_scalarmult.h"
-#include "sodium/crypto_core_hsalsa20.h"
-#include "sodium/crypto_auth_hmacsha256.h"
-#include "sodium/crypto_secretbox.h"
-#include "sodium/crypto_box.h"
+#include <sodium.h>
 #include "NimBLEBeacon.h"
 
 #include <esp_task_wdt.h>
@@ -167,9 +163,12 @@ PairingResult NukiBle::pairNuki(AuthorizationIdType idType) {
     }
     if (connectBle(bleAddress, true)) {
 
-      if (sodium_init() < 0)
+      int ret = sodium_init();
+      ESP_LOGI("NukiBle", "sodium_init() returned: %d", ret);
+
+      if (ret < 0)
       {
-        return false;
+        return PairingResult::Timeout;
       }
 
       crypto_box_keypair(myPublicKey, myPrivateKey);
@@ -1682,11 +1681,11 @@ void NukiBle::setEventHandler(SmartlockEventHandler* handler) {
   eventHandler = handler;
 }
 
-const bool NukiBle::isPairedWithLock() const {
+bool NukiBle::isPairedWithLock() const {
   return isPaired;
 };
 
-const bool NukiBle::isLockUltra() const {
+bool NukiBle::isLockUltra() const {
   return smartLockUltra;
 };
 

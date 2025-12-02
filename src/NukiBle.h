@@ -145,12 +145,12 @@ class NukiBle : public BLEClientCallbacks, public BleScanner::Subscriber {
     /**
      * @brief Returns pairing state (if credentials are stored or not)
      */
-    const bool isPairedWithLock() const;
+    bool isPairedWithLock() const;
     
     /**
      * @brief Returns if BLE is pairing/paired/connected with a Smart Lock Ultra
      */
-    const bool isLockUltra() const;
+    bool isLockUltra() const;
 
     /**
      * @brief Returns the log entry count. Only available after executing retreiveLogEntries.

@@ -405,7 +405,7 @@ class NukiOpener : public Nuki::NukiBle {
     /**
      * @brief Get the Last Error code received from the opener
      */
-    const ErrorCode getLastError() const;
+    ErrorCode getLastError() const;
 
     virtual void logErrorCode(uint8_t errorCode) override;
 

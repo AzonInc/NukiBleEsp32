@@ -746,7 +746,7 @@ uint8_t NukiLock::getBatteryPerc() {
   return (keyTurnerState.criticalBatteryState & 0b11111100) >> 1;
 }
 
-const ErrorCode NukiLock::getLastError() const {
+ErrorCode NukiLock::getLastError() const {
   return (ErrorCode)errorCode;
 }
 

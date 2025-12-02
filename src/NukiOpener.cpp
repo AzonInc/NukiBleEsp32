@@ -590,7 +590,7 @@ bool NukiOpener::isKeypadBatteryCritical() {
   return false;
 }
 
-const ErrorCode NukiOpener::getLastError() const {
+ErrorCode NukiOpener::getLastError() const {
   return (ErrorCode)errorCode;
 }
 
