@@ -14,11 +14,7 @@
 #include "NukiLockUtils.h"
 #include "NukiUtils.h"
 
-#include "sodium/crypto_scalarmult.h"
-#include "sodium/crypto_core_hsalsa20.h"
-#include "sodium/crypto_auth_hmacsha256.h"
-#include "sodium/crypto_secretbox.h"
-#include "sodium/crypto_box.h"
+#include <sodium.h>
 #include "NimBLEBeacon.h"
 
 #include <esp_task_wdt.h>

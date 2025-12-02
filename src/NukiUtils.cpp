@@ -1,6 +1,6 @@
 #include "NukiUtils.h"
 
-#include "sodium/crypto_secretbox.h"
+#include <sodium.h>
 #include "Crc16.h"
 
 #include <cstdint>

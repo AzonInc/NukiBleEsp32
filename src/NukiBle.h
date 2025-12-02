@@ -18,7 +18,7 @@
 #include <Preferences.h>
 #include <BleInterfaces.h>
 
-#include "sodium/crypto_secretbox.h"
+#include <sodium.h>
 
 #include <esp_task_wdt.h>
 #include "esp_log.h"

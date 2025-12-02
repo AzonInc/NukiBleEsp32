@@ -7,10 +7,6 @@ repository: "https://github.com/AzonInc/NukiBleEsp32"
 dependencies:
   idf: ">=5.5"
 
-  esp-nimble-cpp:
-    git: https://github.com/h2zero/esp-nimble-cpp.git
-    version: "2.3.3"
-
   espressif/libsodium: "^1.0.20~2"
 
   crc16:
@@ -19,3 +15,7 @@ dependencies:
   ble-scanner:
     git: https://github.com/AzonInc/ble-scanner.git
     version: "2.1.0"
+
+  esp-nimble-cpp:
+    git: https://github.com/h2zero/esp-nimble-cpp.git
+    version: "2.3.3"
