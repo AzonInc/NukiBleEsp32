@@ -166,6 +166,12 @@ PairingResult NukiBle::pairNuki(AuthorizationIdType idType) {
       ESP_LOGI("NukiBle", "Nuki in pairing mode found");
     }
     if (connectBle(bleAddress, true)) {
+
+      if (sodium_init() < 0)
+      {
+        return false;
+      }
+
       crypto_box_keypair(myPublicKey, myPrivateKey);
 
       PairingState nukiPairingState = PairingState::InitPairing;
