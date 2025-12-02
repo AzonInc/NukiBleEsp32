@@ -169,7 +169,7 @@ PairingResult NukiBle::pairNuki(AuthorizationIdType idType) {
         ESP_LOGE("NukiBle", "sodium_init() failed: %d", ret);
         return PairingResult::Timeout;
       }
-      ESP_LOGD("NukiBle", "sodium_init() result: %d", ret);
+      ESP_LOGI("NukiBle", "sodium_init() result: %d", ret);
 
       crypto_box_keypair(myPublicKey, myPrivateKey);
 
