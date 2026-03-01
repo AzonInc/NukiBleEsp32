@@ -369,7 +369,7 @@ Nuki::CmdResult NukiBle::cmdChallAccStateMachine(const TDeviceAction action) {
         nukiCommandState = CommandState::Idle;
         lastMsgCodeReceived = Command::Empty;
         return Nuki::CmdResult::Lock_Busy;
-      } else if ((CommandStatus)lastMsgCodeReceived == CommandStatus::Complete) {
+      } else if (lastMsgCodeReceived == Command::Status && (CommandStatus)receivedStatus == CommandStatus::Complete) {
         if (debugNukiCommunication) {
           logMessage("************************ COMMAND SUCCESS ************************");
         }
